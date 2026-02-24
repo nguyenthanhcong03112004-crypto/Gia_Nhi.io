@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập Ngữ Pháp Tiếng Anh Nâng Cao (Phiên Bản Mới)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Quiz Styles --- */
+        .quiz-option {
+            background-color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quiz-option:hover {
+            background-color: #cbd5e1;
+            transform: translateY(-2px);
+        }
+        .quiz-option.selected {
+            background-color: #93c5fd;
+            border: 2px solid #3b82f6;
+        }
+        .quiz-option.correct {
+            background-color: #a7f3d0;
+            border: 2px solid #10b981;
+        }
+        .quiz-option.incorrect {
+            background-color: #fecaca;
+            border: 2px solid #ef4444;
+        }
+        .quiz-option button {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+            cursor: pointer;
+        }
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e40af;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .result-message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .result-message.correct {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .result-message.incorrect {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* --- Notes Section Styles --- */
+        #noteList li {
+            list-style: none; /* Remove default bullet */
+        }
+        .note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .note-item:last-child {
+            border-bottom: none;
+        }
+        .note-text-display {
+            flex-grow: 1;
+            padding-right: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .delete-note-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            padding: 0.25rem;
+        }
+        .delete-note-btn:hover {
+            color: #b91c1c;
+        }
+        .message-box { /* Generic message box */
+            background-color: #fff3cd;
+            color: #664d03;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 1px solid #ffecb5;
+        }
+
+        /* --- Navigator Styles --- */
+        .navigator-button {
+            background-color: #cbd5e1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            text-align: center;
+            font-weight: 600;
+            color: #475569;
+        }
+        .navigator-button:hover {
+            background-color: #94a3b8;
+            transform: translateY(-1px);
+        }
+        .navigator-button.active-question {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: 2px solid #1d4ed8;
+            transform: scale(1.05);
+        }
+        .navigator-button.answered-correctly {
+            background-color: #a7f3d0;
+            border: 2px solid #10b981;
+        }
+        .navigator-button.answered-incorrectly {
+            background-color: #fecaca;
+            border: 2px solid #ef4444;
+        }
+        .highlight-keyword {
+            color: red;
+            font-weight: bold;
+        }
+        .hint-text {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: #e0f2fe; /* Light blue background for hints */
+            color: #0c4a6e; /* Darker blue text */
+            border: 1px solid #93c5fd;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-extrabold text-blue-700 mb-2">Bài Tập Ngữ Pháp Tiếng Anh Nâng Cao</h1>
+            <p class="text-xl text-gray-600">Rèn luyện kiến thức ngữ pháp với các dạng bài tập chuyên sâu</p>
+        </header>
+
+        <main class="mt-8">
+            <!-- Combined Quiz and Notes Section - Now with Navigator -->
+            <section id="quizAndNotesCombined" class="tab-content active flex flex-col md:flex-row gap-6">
+                <!-- Navigator Column -->
+                <div class="w-full md:w-1/4">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Điều Hướng Câu Hỏi</h2>
+                    <div class="card p-6">
+                        <div id="question-navigator" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                            <!-- Question buttons will be inserted here by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Column -->
+                <div class="w-full md:w-1/2">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Bài Tập Thực Hành Ngữ Pháp</h2>
+                    <div class="card p-6">
+                        <p class="text-lg mb-4 text-center" id="quiz-question-number">Câu hỏi <span id="current-question">1</span> / <span id="total-questions-quiz">90</span></p>
+                        <p class="text-xl font-semibold mb-6 text-center" id="quiz-question">1. My brother often ___________ video games after school.</p>
+                        <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        <div id="quiz-feedback" class="mt-4 text-center">
+                            <div id="result-message" class="result-message hidden"></div>
+                            <p id="explanation-text" class="text-gray-700 mt-2 hidden"></p>
+                            <p id="hint-text" class="hint-text hidden"></p> <!-- New hint display area -->
+                        </div>
+                        <div class="flex flex-wrap justify-center mt-6 gap-4">
+                            <button id="submit-answer-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                Kiểm Tra
+                            </button>
+                            <button id="hint-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                <i class="fas fa-lightbulb mr-2"></i> Gợi Ý
+                            </button>
+                            <button id="next-quiz-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105 hidden">
+                                Câu Tiếp Theo
+                            </button>
+                            <button id="reset-quiz-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105 hidden">
+                                Làm Lại Bài
+                            </button>
+                            <button id="export-results-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                <i class="fas fa-file-export mr-2"></i> Xuất Kết Quả
+                            </button>
+                            <button id="restart-all-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                <i class="fas fa-sync-alt mr-2"></i> Làm Lại Từ Đầu
+                            </button>
+                        </div>
+                        <div class="score-display mt-6">
+                            Điểm của bạn: <span id="quiz-score">0</span> / <span id="quiz-total-questions-score">90</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Column -->
+                <div class="w-full md:w-1/4">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ghi Chú Cá Nhân</h2>
+                    <div class="card p-6">
+                        <div id="general-message-box" class="message-box hidden"></div>
+                        <textarea id="noteTextarea" class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64 resize-y" placeholder="Viết ghi chú của bạn ở đây..."></textarea>
+                        <div class="flex justify-center mt-4 space-x-4">
+                            <button id="saveNoteBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                <i class="fas fa-save mr-2"></i> Lưu Ghi Chú
+                            </button>
+                            <button id="exportNoteBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105">
+                                <i class="fas fa-file-word mr-2"></i> Xuất Word
+                            </button>
+                        </div>
+                        <div id="savedNotes" class="mt-6 p-4 bg-gray-100 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-3">Ghi Chú Đã Lưu:</h3>
+                            <ul id="noteList"><li class="text-gray-500 text-center py-4">Chưa có ghi chú nào được lưu.</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            BẢN QUYỀN THUỘC VỀ TÁC GIẢ-NGHIÊM CẤM SỬ DỤNG VỚI MỤC ĐÍCH THƯƠNG MẠI<br>
+            Tiếng Anh Tốt Tienganhtot.vn Lưu Hoằng Trí
+        </footer>
+    </div>
+
+    <script>
+        // Quiz Data for Advanced Grammar (140 questions with type and highlight)
+        const quizQuestions = [
+            // Dạng 1: Hiện tại đơn (Simple Present) - 10 câu
+            {
+                type: "simple_present",
+                question: "1. My sister usually ___________ her dog in the park every morning.",
+                options: ["A. walk", "B. walks", "C. walked", "D. is walking"],
+                answer: "B",
+                explanation: "Đáp án: B. walks. \"Usually\" và \"every morning\" chỉ thói quen lặp lại, dùng thì hiện tại đơn. Chủ ngữ \"My sister\" là số ít, nên động từ thêm \"s\".",
+                highlight: "___________",
+                hint: "Chú ý trạng từ tần suất 'usually' và cụm từ chỉ thời gian 'every morning'. Đây là dấu hiệu của thì hiện tại đơn, diễn tả thói quen. Đừng quên chia động từ theo chủ ngữ số ít."
+            },
+            {
+                type: "simple_present",
+                question: "2. Water ___________ at 0 degrees Celsius.",
+                options: ["A. freeze", "B. freezes", "C. froze", "D. is freezing"],
+                answer: "B",
+                explanation: "Đáp án: B. freezes. Đây là một sự thật khoa học, dùng thì hiện tại đơn. \"Water\" là danh từ không đếm được (số ít), nên động từ thêm \"s\".",
+                highlight: "___________",
+                hint: "Đây là một sự thật hiển nhiên, một quy luật khoa học. Hãy nghĩ đến thì nào được dùng để diễn tả những sự thật vĩnh cửu."
+            },
+            {
+                type: "simple_present",
+                question: "3. The Earth ___________ around the sun.",
+                options: ["A. revolve", "B. revolves", "C. revolved", "D. is revolving"],
+                answer: "B",
+                explanation: "Đáp án: B. revolves. Đây là một sự thật hiển nhiên, dùng thì hiện tại đơn. \"The Earth\" là chủ ngữ số ít, nên động từ thêm \"s\".",
+                highlight: "___________",
+                hint: "Tương tự như câu trước, đây là một sự thật chung, một hiện tượng tự nhiên. Thì hiện tại đơn là lựa chọn phù hợp."
+            },
+            {
+                type: "simple_present",
+                question: "4. They ___________ to the gym three times a week.",
+                options: ["A. go", "B. goes", "C. went", "D. are going"],
+                answer: "A",
+                explanation: "Đáp án: A. go. \"Three times a week\" chỉ tần suất, là thói quen, dùng thì hiện tại đơn. \"They\" là chủ ngữ số nhiều, nên động từ giữ nguyên mẫu.",
+                highlight: "___________",
+                hint: "Cụm từ 'three times a week' chỉ tần suất lặp lại. Hãy nhớ quy tắc chia động từ với chủ ngữ số nhiều trong thì hiện tại đơn."
+            },
+            {
+                type: "simple_present",
+                question: "5. What kind of music ___________ she ___________?",
+                options: ["A. do / like", "B. does / like", "C. did / like", "D. is / liking"],
+                answer: "B",
+                explanation: "Đáp án: B. does / like. Câu hỏi về sở thích chung, dùng thì hiện tại đơn. \"She\" là chủ ngữ số ít, nên dùng trợ động từ \"does\".",
+                highlight: "___________ she ___________",
+                hint: "Đây là câu hỏi về sở thích chung. Hãy nhớ trợ động từ phù hợp với chủ ngữ 'she' trong câu hỏi thì hiện tại đơn."
+            },
+            {
+                type: "simple_present",
+                question: "6. Birds ___________ south for the winter.",
+                options: ["A. fly", "B. flies", "C. flew", "D. are flying"],
+                answer: "A",
+                explanation: "Đáp án: A. fly. Đây là một sự thật chung về loài chim, dùng thì hiện tại đơn. \"Birds\" là chủ ngữ số nhiều, nên động từ giữ nguyên mẫu.",
+                highlight: "___________",
+                hint: "Đây là một sự thật chung về hành vi của loài vật. Chủ ngữ là số nhiều, hãy xem xét dạng động từ nguyên mẫu."
+            },
+            {
+                type: "simple_present",
+                question: "7. He ___________ rarely ___________ late for appointments.",
+                options: ["A. is / being", "B. is / be", "C. is /", "D. does / be"],
+                answer: "C",
+                explanation: "Đáp án: C. is /. Với động từ \"to be\" và trạng từ tần suất, \"to be\" đứng trước trạng từ. \"He is rarely...\" diễn tả thói quen.",
+                highlight: "___________ rarely ___________",
+                hint: "Khi sử dụng động từ 'to be' với trạng từ tần suất như 'rarely', động từ 'to be' sẽ đứng trước trạng từ."
+            },
+            {
+                type: "simple_present",
+                question: "8. My parents ___________ coffee every morning.",
+                options: ["A. drink", "B. drinks", "C. drank", "D. are drinking"],
+                answer: "A",
+                explanation: "Đáp án: A. drink. \"My parents\" là chủ ngữ số nhiều, diễn tả thói quen hàng ngày, dùng thì hiện tại đơn.",
+                highlight: "___________",
+                hint: "Cụm từ 'every morning' chỉ thói quen hàng ngày. Chủ ngữ 'My parents' là số nhiều."
+            },
+            {
+                type: "simple_present",
+                question: "9. How often ___________ you ___________ your car?",
+                options: ["A. do / wash", "B. does / wash", "C. did / wash", "D. are / washing"],
+                answer: "A",
+                explanation: "Đáp án: A. do / wash. \"How often\" hỏi về tần suất, dùng thì hiện tại đơn. \"You\" là chủ ngữ, nên dùng trợ động từ \"do\".",
+                highlight: "___________ you ___________",
+                hint: "Câu hỏi bắt đầu bằng 'How often' thường dùng thì hiện tại đơn để hỏi về tần suất. Hãy chọn trợ động từ phù hợp với 'you'."
+            },
+            {
+                type: "simple_present",
+                question: "10. The museum ___________ at 9 AM and ___________ at 5 PM daily.",
+                options: ["A. open / closes", "B. opens / close", "C. opens / closes", "D. opened / closed"],
+                answer: "C",
+                explanation: "Đáp án: C. opens / closes. Đây là lịch trình cố định, dùng thì hiện tại đơn. \"The museum\" là chủ ngữ số ít, nên cả hai động từ đều thêm \"s\".",
+                highlight: "___________ at 9 AM and ___________",
+                hint: "Đây là một lịch trình cố định, thường xuyên lặp lại. Hãy nhớ chia động từ với chủ ngữ 'The museum' là số ít."
+            },
+
+            // Dạng 2: Hiện tại hoàn thành (Present Perfect) - 10 câu
+            {
+                type: "present_perfect",
+                question: "1. I ___________ that movie several times.",
+                options: ["A. see", "B. saw", "C. have seen", "D. am seeing"],
+                answer: "C",
+                explanation: "Đáp án: C. have seen. \"Several times\" chỉ số lần kinh nghiệm đã trải qua trong đời, dùng thì hiện tại hoàn thành.",
+                highlight: "___________",
+                hint: "Cụm từ 'several times' gợi ý về kinh nghiệm đã trải qua trong quá khứ nhưng không nói rõ thời điểm cụ thể. Đây là dấu hiệu của thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "2. She ___________ in this company since 2010.",
+                options: ["A. works", "B. worked", "C. has worked", "D. is working"],
+                answer: "C",
+                explanation: "Đáp án: C. has worked. \"Since 2010\" chỉ mốc thời gian hành động bắt đầu và kéo dài đến hiện tại, dùng thì hiện tại hoàn thành.",
+                highlight: "___________",
+                hint: "Từ 'since' (kể từ) là dấu hiệu rõ ràng của thì hiện tại hoàn thành, diễn tả hành động bắt đầu trong quá khứ và kéo dài đến hiện tại."
+            },
+            {
+                type: "present_perfect",
+                question: "3. We ___________ dinner yet.",
+                options: ["A. haven't eaten", "B. didn't eat", "C. aren't eating", "D. don't eat"],
+                answer: "A",
+                explanation: "Đáp án: A. haven't eaten. \"Yet\" là dấu hiệu của thì hiện tại hoàn thành ở thể phủ định.",
+                highlight: "___________",
+                hint: "Từ 'yet' (chưa) thường được dùng trong câu phủ định hoặc câu hỏi của thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "4. This is the worst food I ___________ ever ___________.",
+                options: ["A. eat / eaten", "B. ate / ate", "C. have / eaten", "D. am / eating"],
+                answer: "C",
+                explanation: "Đáp án: C. have / eaten. Cấu trúc \"This is the + superlative + N + I have ever + PII\" dùng thì hiện tại hoàn thành để diễn tả trải nghiệm tồi tệ nhất từ trước đến nay.",
+                highlight: "___________ ever ___________",
+                hint: "Cấu trúc 'This is the worst... I have ever...' là một cách diễn đạt kinh nghiệm, sử dụng thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "5. He ___________ his leg. That's why he can't play football.",
+                options: ["A. breaks", "B. broke", "C. has broken", "D. is breaking"],
+                answer: "C",
+                explanation: "Đáp án: C. has broken. Hành động gãy chân đã hoàn thành trong quá khứ nhưng kết quả (không thể chơi bóng) vẫn còn ở hiện tại, dùng thì hiện tại hoàn thành.",
+                highlight: "___________",
+                hint: "Hành động xảy ra trong quá khứ nhưng có kết quả rõ ràng ở hiện tại. Đây là đặc điểm của thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "6. How long ___________ you ___________ your current job?",
+                options: ["A. do / have", "B. did / have", "C. have / had", "D. are / having"],
+                answer: "C",
+                explanation: "Đáp án: C. have / had. \"How long\" hỏi về khoảng thời gian của một hành động bắt đầu trong quá khứ và tiếp diễn đến hiện tại, dùng thì hiện tại hoàn thành.",
+                highlight: "___________ you ___________",
+                hint: "Câu hỏi 'How long' thường dùng để hỏi về khoảng thời gian của một hành động kéo dài từ quá khứ đến hiện tại, sử dụng thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "7. They ___________ just ___________ a new car.",
+                options: ["A. buy", "B. bought", "C. have / bought", "D. are / buying"],
+                answer: "C",
+                explanation: "Đáp án: C. have / bought. \"Just\" là dấu hiệu của thì hiện tại hoàn thành, diễn tả hành động vừa mới hoàn tất.",
+                highlight: "___________ just ___________",
+                hint: "Trạng từ 'just' (vừa mới) là dấu hiệu của thì hiện tại hoàn thành."
+            },
+            {
+                type: "present_perfect",
+                question: "8. My car ___________ for two days. I need to get it fixed.",
+                options: ["A. is broken", "B. broke", "C. has been broken", "D. was broken"],
+                answer: "C",
+                explanation: "Đáp án: C. has been broken. \"For two days\" chỉ khoảng thời gian tình trạng bắt đầu và kéo dài đến hiện tại, dùng thì hiện tại hoàn thành (thể bị động).",
+                highlight: "___________",
+                hint: "Cụm từ 'for two days' chỉ khoảng thời gian kéo dài đến hiện tại. Đồng thời, chiếc xe 'bị' hỏng, nên cần dùng thể bị động."
+            },
+            {
+                type: "present_perfect",
+                question: "9. I ___________ never ___________ to Japan.",
+                options: ["A. go", "B. went", "C. have / been", "D. am / going"],
+                answer: "C",
+                explanation: "Đáp án: C. have / been. \"Never\" diễn tả kinh nghiệm chưa từng có, dùng thì hiện tại hoàn thành.",
+                highlight: "___________ never ___________",
+                hint: "Trạng từ 'never' (chưa bao giờ) thường dùng với thì hiện tại hoàn thành để diễn tả kinh nghiệm."
+            },
+            {
+                type: "present_perfect",
+                question: "10. We ___________ all the cookies. There are none left.",
+                options: ["A. eat", "B. ate", "C. have eaten", "D. are eating"],
+                answer: "C",
+                explanation: "Đáp án: C. have eaten. Hành động ăn hết bánh đã hoàn thành trong quá khứ nhưng kết quả (không còn cái nào) vẫn còn ở hiện tại, dùng thì hiện tại hoàn thành.",
+                highlight: "___________",
+                hint: "Hành động đã hoàn tất trong quá khứ nhưng để lại kết quả rõ rệt ở hiện tại ('There are none left')."
+            },
+
+            // Dạng 3: Quá khứ tiếp diễn (Past Continuous) - 10 câu
+            {
+                type: "past_continuous",
+                question: "1. At 7 a.m. this morning, I ___________ breakfast.",
+                options: ["A. had", "B. have", "C. was having", "D. am having"],
+                answer: "C",
+                explanation: "Đáp án: C. was having. \"At 7 a.m. this morning\" chỉ một thời điểm cụ thể trong quá khứ, hành động đang diễn ra tại thời điểm đó dùng thì quá khứ tiếp diễn.",
+                highlight: "___________",
+                hint: "Cụm từ 'At 7 a.m. this morning' chỉ một thời điểm cụ thể trong quá khứ. Hãy nghĩ đến thì diễn tả hành động đang diễn ra tại một thời điểm xác định trong quá khứ."
+            },
+            {
+                type: "past_continuous",
+                question: "2. While she ___________ a book, her phone ___________.",
+                options: ["A. read / rang", "B. was reading / rang", "C. read / was ringing", "D. was reading / was ringing"],
+                answer: "B",
+                explanation: "Đáp án: B. was reading / rang. \"While\" nối hai hành động trong quá khứ: hành động đọc sách (dài hơn, đang diễn ra) thì hành động điện thoại reo (ngắn hơn, xen vào) xảy ra.",
+                highlight: "___________ a book, her phone ___________",
+                hint: "Từ 'While' thường dùng để nối hai hành động: một hành động đang diễn ra (quá khứ tiếp diễn) thì một hành động khác (quá khứ đơn) xen vào."
+            },
+            {
+                type: "past_continuous",
+                question: "3. The children ___________ in the garden when it started to rain.",
+                options: ["A. played", "B. were playing", "C. had played", "D. play"],
+                answer: "B",
+                explanation: "Đáp án: B. were playing. Hành động chơi (dài hơn, đang diễn ra) bị hành động trời mưa (ngắn hơn, xen vào) cắt ngang.",
+                highlight: "___________",
+                hint: "Hành động chơi đang diễn ra trong quá khứ thì bị một hành động khác (trời mưa) bất ngờ xen vào. Hãy sử dụng thì phù hợp cho hành động đang diễn ra."
+            },
+            {
+                type: "past_continuous",
+                question: "4. What ___________ he ___________ at 10 p.m. last night?",
+                options: ["A. did / do", "B. was / doing", "C. has / done", "D. is / doing"],
+                answer: "B",
+                explanation: "Đáp án: B. was / doing. Hỏi về hành động đang diễn ra tại một thời điểm cụ thể trong quá khứ.",
+                highlight: "___________ he ___________",
+                hint: "Câu hỏi này hỏi về một hành động đang diễn ra tại một thời điểm cụ thể trong quá khứ ('at 10 p.m. last night')."
+            },
+            {
+                type: "past_continuous",
+                question: "5. I ___________ a shower when the doorbell ___________.",
+                options: ["A. took / rang", "B. was taking / rang", "C. took / was ringing", "D. was taking / was ringing"],
+                answer: "B",
+                explanation: "Đáp án: B. was taking / rang. Hành động tắm (dài hơn, đang diễn ra) bị hành động chuông cửa reo (ngắn hơn, xen vào) cắt ngang.",
+                highlight: "___________ a shower when the doorbell ___________",
+                hint: "Một hành động dài đang diễn ra (tắm) bị một hành động ngắn hơn (chuông cửa reo) cắt ngang. Hãy chọn thì phù hợp cho mỗi hành động."
+            },
+            {
+                type: "past_continuous",
+                question: "6. They ___________ TV from 8 to 9 p.m. yesterday evening.",
+                options: ["A. watched", "B. were watching", "C. had watched", "D. watch"],
+                answer: "B",
+                explanation: "Đáp án: B. were watching. \"From 8 to 9 p.m. yesterday evening\" chỉ một khoảng thời gian cụ thể trong quá khứ mà hành động đang diễn ra.",
+                highlight: "___________",
+                hint: "Cụm từ 'from 8 to 9 p.m. yesterday evening' chỉ một khoảng thời gian cụ thể trong quá khứ. Hành động đang diễn ra trong suốt khoảng thời gian đó."
+            },
+            {
+                type: "past_continuous",
+                question: "7. She ___________ for her exam all afternoon yesterday.",
+                options: ["A. studied", "B. was studying", "C. had studied", "D. studies"],
+                answer: "B",
+                explanation: "Đáp án: B. was studying. \"All afternoon yesterday\" chỉ hành động diễn ra liên tục trong suốt một khoảng thời gian trong quá khứ.",
+                highlight: "___________",
+                hint: "Cụm từ 'all afternoon yesterday' nhấn mạnh hành động diễn ra liên tục trong một khoảng thời gian trong quá khứ."
+            },
+            {
+                type: "past_continuous",
+                question: "8. As I ___________ down the street, I ___________ an accident.",
+                options: ["A. walked / saw", "B. was walking / saw", "C. walked / was seeing", "D. was walking / was seeing"],
+                answer: "B",
+                explanation: "Đáp án: B. was walking / saw. Hành động đi bộ (dài hơn, đang diễn ra) thì hành động nhìn thấy tai nạn (ngắn hơn, xen vào) xảy ra.",
+                highlight: "___________ down the street, I ___________",
+                hint: "Từ 'As' thường dùng để nối hai hành động trong quá khứ: một hành động đang diễn ra thì hành động kia xen vào."
+            },
+            {
+                type: "past_continuous",
+                question: "9. My parents ___________ dinner while I ___________ my homework.",
+                options: ["A. cooked / did", "B. were cooking / was doing", "C. cooked / was doing", "D. were cooking / did"],
+                answer: "B",
+                explanation: "Đáp án: B. were cooking / was doing. \"While\" nối hai hành động đang diễn ra song song trong quá khứ.",
+                highlight: "___________ dinner while I ___________",
+                hint: "Từ 'while' ở đây chỉ hai hành động đang diễn ra song song cùng lúc trong quá khứ. Cả hai đều dùng thì quá khứ tiếp diễn."
+            },
+            {
+                type: "past_continuous",
+                question: "10. What ___________ you ___________ at this time last year?",
+                options: ["A. did / do", "B. were / doing", "C. have / done", "D. are / doing"],
+                answer: "B",
+                explanation: "Đáp án: B. were / doing. Hỏi về hành động đang diễn ra tại một thời điểm cụ thể trong quá khứ.",
+                highlight: "___________ you ___________",
+                hint: "Cụm từ 'at this time last year' chỉ một thời điểm cụ thể trong quá khứ. Câu hỏi này muốn biết hành động đang diễn ra tại thời điểm đó."
+            },
+
+            // Dạng 4: Tương lai hoàn thành (Future Perfect) - 10 câu
+            {
+                type: "future_perfect",
+                question: "1. By the end of this year, I ___________ my master's degree.",
+                options: ["A. get", "B. will get", "C. will be getting", "D. will have gotten"],
+                answer: "D",
+                explanation: "Đáp án: D. will have gotten. \"By the end of this year\" là dấu hiệu của thì tương lai hoàn thành, diễn tả một hành động sẽ hoàn tất trước một thời điểm xác định trong tương lai.",
+                highlight: "___________",
+                hint: "Cụm từ 'By the end of this year' là dấu hiệu của thì tương lai hoàn thành, diễn tả hành động sẽ hoàn tất trước một mốc thời gian trong tương lai."
+            },
+            {
+                type: "future_perfect",
+                question: "2. By the time you arrive, we ___________ all the preparations.",
+                options: ["A. make", "B. will make", "C. will be making", "D. will have made"],
+                answer: "D",
+                explanation: "Đáp án: D. will have made. \"By the time\" kết hợp với hiện tại đơn để chỉ một hành động sẽ hoàn thành trước một hành động khác trong tương lai.",
+                highlight: "___________",
+                hint: "Cấu trúc 'By the time + S + V(hiện tại đơn), S + will have + PII' dùng để diễn tả hành động sẽ hoàn tất trước một thời điểm hoặc hành động khác trong tương lai."
+            },
+            {
+                type: "future_perfect",
+                question: "3. She ___________ her novel by next month.",
+                options: ["A. finishes", "B. will finish", "C. will be finishing", "D. will have finished"],
+                answer: "D",
+                explanation: "Đáp án: D. will have finished. \"By next month\" là dấu hiệu của thì tương lai hoàn thành, chỉ sự hoàn thành của hành động trước một thời điểm cụ thể trong tương lai.",
+                highlight: "___________",
+                hint: "Tương tự như 'By the end of this year', 'by next month' cũng là dấu hiệu của thì tương lai hoàn thành."
+            },
+            {
+                type: "future_perfect",
+                question: "4. I think they ___________ the new stadium by 2028.",
+                options: ["A. complete", "B. will complete", "C. will be completing", "D. will have completed"],
+                answer: "D",
+                explanation: "Đáp án: D. will have completed. \"By 2028\" chỉ sự hoàn thành của hành động xây dựng trước một mốc thời gian trong tương lai.",
+                highlight: "___________",
+                hint: "Mốc thời gian 'by 2028' chỉ ra rằng hành động sẽ hoàn tất trước thời điểm đó. Hãy chọn thì tương lai hoàn thành."
+            },
+            {
+                type: "future_perfect",
+                question: "5. We ___________ all the tickets by the time the concert starts.",
+                options: ["A. sell", "B. will sell", "C. will be selling", "D. will have sold"],
+                answer: "D",
+                explanation: "Đáp án: D. will have sold. \"By the time the concert starts\" là dấu hiệu của thì tương lai hoàn thành.",
+                highlight: "___________",
+                hint: "Hành động bán vé sẽ hoàn tất trước khi buổi hòa nhạc bắt đầu. Đây là dấu hiệu của thì tương lai hoàn thành."
+            },
+            {
+                type: "future_perfect",
+                question: "6. By next year, my brother ___________ his military service.",
+                options: ["A. finishes", "B. will finish", "C. will be finishing", "D. will have finished"],
+                answer: "D",
+                explanation: "Đáp án: D. will have finished. \"By next year\" chỉ sự hoàn thành của hành động trước một mốc thời gian trong tương lai.",
+                highlight: "___________",
+                hint: "Cụm từ 'By next year' cho thấy hành động sẽ kết thúc trước một thời điểm trong tương lai. Sử dụng thì tương lai hoàn thành."
+            },
+            {
+                type: "future_perfect",
+                question: "7. The project __ by the time the manager __ back.",
+                options: ["A. is done / comes", "B. will be done / comes", "C. will have been done / comes", "D. will have been done / came"],
+                answer: "C",
+                explanation: "Đáp án: C. will have been done / comes. Hành động dự án hoàn thành (bị động) sẽ hoàn thành trước khi người quản lý trở lại. Mệnh đề \"by the time\" với thì hiện tại đơn, mệnh đề chính với tương lai hoàn thành (bị động).",
+                highlight: "__ by the time the manager __",
+                hint: "Hành động dự án hoàn thành sẽ xảy ra trước khi người quản lý quay lại. Đồng thời, dự án 'được' hoàn thành, nên cần thể bị động. Mệnh đề 'by the time' đi với hiện tại đơn."
+            },
+            {
+                type: "future_perfect",
+                question: "8. How many books __ you __ by the time you retire?",
+                options: ["A. will / write", "B. will / have written", "C. have / written", "D. are / writing"],
+                answer: "B",
+                explanation: "Đáp án: B. will / have written. Hỏi về tổng số lượng (hoàn thành) của một hành động tính đến một thời điểm trong tương lai.",
+                highlight: "__ you __",
+                hint: "Câu hỏi này hỏi về số lượng đã hoàn thành của một hành động tính đến một thời điểm trong tương lai ('by the time you retire')."
+            },
+            {
+                type: "future_perfect",
+                question: "9. By the time I finish this report, I ___________ for 8 hours straight.",
+                options: ["A. write", "B. will write", "C. will be writing", "D. will have been writing"],
+                answer: "D",
+                explanation: "Đáp án: D. will have been writing. Hành động viết sẽ kéo dài liên tục đến một thời điểm trong tương lai, và nhấn mạnh quá trình này. Dùng tương lai hoàn thành tiếp diễn.",
+                highlight: "___________",
+                hint: "Cụm từ 'for 8 hours straight' và 'By the time I finish this report' cho thấy hành động sẽ diễn ra liên tục và kéo dài đến một thời điểm trong tương lai. Đây là dấu hiệu của thì tương lai hoàn thành tiếp diễn."
+            },
+            {
+                type: "future_perfect",
+                question: "10. They ___________ the new office building by the end of the quarter.",
+                options: ["A. occupy", "B. will occupy", "C. will be occupying", "D. will have occupied"],
+                answer: "D",
+                explanation: "Đáp án: D. will have occupied. \"By the end of the quarter\" chỉ sự hoàn thành của hành động trước thời điểm cuối quý.",
+                highlight: "___________",
+                hint: "Cụm từ 'by the end of the quarter' là dấu hiệu của thì tương lai hoàn thành."
+            },
+
+            // Dạng 5: Quá khứ hoàn thành (Past Perfect) - 10 câu
+            {
+                type: "past_perfect",
+                question: "1. She ___________ her homework before she went to bed.",
+                options: ["A. did", "B. had done", "C. was doing", "D. has done"],
+                answer: "B",
+                explanation: "Đáp án: B. had done. Hành động làm bài tập xảy ra trước (Past Perfect) hành động đi ngủ (Simple Past).",
+                highlight: "___________",
+                hint: "Từ 'before' nối hai hành động trong quá khứ. Hành động nào xảy ra trước sẽ dùng thì quá khứ hoàn thành."
+            },
+            {
+                type: "past_perfect",
+                question: "2. By the time I ___________ to the airport, the plane ___________ already.",
+                options: ["A. got / left", "B. got / had left", "C. had got / left", "D. got / was leaving"],
+                answer: "B",
+                explanation: "Đáp án: B. got / had left. Hành động máy bay rời đi xảy ra trước (Past Perfect) hành động tôi đến sân bay (Simple Past). \"Already\" nhấn mạnh sự hoàn thành trước đó.",
+                highlight: "___________ to the airport, the plane ___________",
+                hint: "Cấu trúc 'By the time + S + V(quá khứ đơn), S + had + PII' dùng để diễn tả hành động đã hoàn tất trước một thời điểm hoặc hành động khác trong quá khứ. Từ 'already' cũng là dấu hiệu."
+            },
+            {
+                type: "past_perfect",
+                question: "3. He ___________ in the company for ten years before he retired.",
+                options: ["A. worked", "B. had worked", "C. had been working", "D. was working"],
+                answer: "C",
+                explanation: "Đáp án: C. had been working. Hành động làm việc đã diễn ra liên tục trong 10 năm và kết thúc tại thời điểm anh ấy nghỉ hưu. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn.",
+                highlight: "___________",
+                hint: "Cụm từ 'for ten years' và 'before he retired' cho thấy hành động làm việc đã diễn ra liên tục trong một khoảng thời gian và kết thúc trước một hành động khác trong quá khứ. Hãy nghĩ đến thì quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect",
+                question: "4. I couldn't enter the house because I ___________ my keys.",
+                options: ["A. lose", "B. lost", "C. had lost", "D. was losing"],
+                answer: "C",
+                explanation: "Đáp án: C. had lost. Việc mất chìa khóa xảy ra trước và là nguyên nhân dẫn đến việc không thể vào nhà.",
+                highlight: "___________",
+                hint: "Hành động mất chìa khóa xảy ra trước và là nguyên nhân trực tiếp của việc không thể vào nhà ở quá khứ. Sử dụng thì quá khứ hoàn thành."
+            },
+            {
+                type: "past_perfect",
+                question: "5. When I ___________ her, she ___________ already ___________.",
+                options: ["A. saw / left", "B. saw / had left", "C. saw / was leaving", "D. had seen / left"],
+                answer: "B",
+                explanation: "Đáp án: B. saw / had left. Hành động cô ấy rời đi đã xảy ra trước khi tôi nhìn thấy cô ấy.",
+                highlight: "___________ her, she ___________ already ___________",
+                hint: "Hành động cô ấy rời đi đã hoàn tất trước khi tôi nhìn thấy cô ấy. Từ 'already' cũng là dấu hiệu. Hành động xảy ra trước dùng quá khứ hoàn thành, hành động sau dùng quá khứ đơn."
+            },
+            {
+                type: "past_perfect",
+                question: "6. They ___________ all the cake when we ___________ at the party.",
+                options: ["A. ate / arrived", "B. had eaten / arrived", "C. ate / had arrived", "D. had eaten / had arrived"],
+                answer: "B",
+                explanation: "Đáp án: B. had eaten / arrived. Hành động ăn hết bánh xảy ra trước (Past Perfect) hành động chúng tôi đến bữa tiệc (Simple Past).",
+                highlight: "___________ all the cake when we ___________",
+                hint: "Hành động ăn hết bánh đã xảy ra và hoàn tất trước khi chúng tôi đến bữa tiệc. Hành động xảy ra trước dùng quá khứ hoàn thành."
+            },
+            {
+                type: "past_perfect",
+                question: "7. He ___________ never ___________ a horse before he rode one last week.",
+                options: ["A. rode", "B. had / ridden", "C. rides", "D. was riding"],
+                answer: "B",
+                explanation: "Đáp án: B. had / ridden. \"Never\" ở đây diễn tả kinh nghiệm chưa từng có tính đến một thời điểm trong quá khứ.",
+                highlight: "___________ never ___________",
+                hint: "Từ 'never' kết hợp với 'before he rode one last week' cho thấy một kinh nghiệm chưa từng có tính đến một thời điểm trong quá khứ. Sử dụng thì quá khứ hoàn thành."
+            },
+            {
+                type: "past_perfect",
+                question: "8. She was exhausted because she ___________ for hours.",
+                options: ["A. ran", "B. had run", "C. had been running", "D. was running"],
+                answer: "C",
+                explanation: "Đáp án: C. had been running. Hành động chạy đã diễn ra liên tục trong nhiều giờ và là nguyên nhân dẫn đến việc cô ấy kiệt sức ở quá khứ. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động chạy đã diễn ra liên tục trong nhiều giờ và là nguyên nhân của tình trạng kiệt sức ở quá khứ. Nhấn mạnh quá trình dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect",
+                question: "9. After he ___________ his presentation, he answered questions.",
+                options: ["A. finished", "B. had finished", "C. finishes", "D. was finishing"],
+                answer: "B",
+                explanation: "Đáp án: B. had finished. \"After + QKHT, QKD\". Hành động hoàn thành bài thuyết trình xảy ra trước hành động trả lời câu hỏi.",
+                highlight: "___________",
+                hint: "Từ 'After' thường đi với thì quá khứ hoàn thành ở mệnh đề chỉ thời gian, diễn tả hành động xảy ra trước một hành động khác trong quá khứ."
+            },
+            {
+                type: "past_perfect",
+                question: "10. I didn't recognize the place because it ___________ so much.",
+                options: ["A. changed", "B. had changed", "C. changes", "D. was changing"],
+                answer: "B",
+                explanation: "Đáp án: B. had changed. Việc nơi đó thay đổi nhiều đã xảy ra trước và là nguyên nhân dẫn đến việc tôi không nhận ra nó.",
+                highlight: "___________",
+                hint: "Hành động thay đổi đã xảy ra trước và là nguyên nhân của việc không nhận ra địa điểm ở quá khứ. Sử dụng thì quá khứ hoàn thành."
+            },
+
+            // Dạng 6: Tương lai đơn (Simple Future) & Câu điều kiện loại 1 (Conditional Type 1) - 10 câu
+            {
+                type: "future_simple_conditional_1",
+                question: "1. I think she ___________ the competition.",
+                options: ["A. wins", "B. won", "C. will win", "D. is winning"],
+                answer: "C",
+                explanation: "Đáp án: C. will win. \"I think\" diễn tả một dự đoán không chắc chắn về tương lai, dùng thì tương lai đơn.",
+                highlight: "___________",
+                hint: "Cụm từ 'I think' thường đi với thì tương lai đơn để diễn tả một dự đoán hoặc ý kiến."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "2. If it ___________ sunny tomorrow, we ___________ to the beach.",
+                options: ["A. is / go", "B. is / will go", "C. was / would go", "D. will be / will go"],
+                answer: "B",
+                explanation: "Đáp án: B. is / will go. Câu điều kiện loại 1, diễn tả một sự việc có thể xảy ra ở hiện tại hoặc tương lai. Mệnh đề \"If\" dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn.",
+                highlight: "___________ sunny tomorrow, we ___________",
+                hint: "Đây là câu điều kiện loại 1, diễn tả điều có thể xảy ra ở hiện tại hoặc tương lai. Mệnh đề 'if' dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "3. I ___________ you when I ___________ the news.",
+                options: ["A. tell / hear", "B. will tell / hear", "C. tell / will hear", "D. will tell / will hear"],
+                answer: "B",
+                explanation: "Đáp án: B. will tell / hear. \"When\" trong câu diễn tả hành động trong tương lai. Mệnh đề chỉ thời gian (when, as soon as, after, before...) dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn.",
+                highlight: "___________ you when I ___________",
+                hint: "Trong câu có mệnh đề thời gian bắt đầu bằng 'when' chỉ tương lai, mệnh đề 'when' dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "4. He ___________ probably ___________ us with the project.",
+                options: ["A. helps", "B. will / help", "C. is / helping", "D. helped"],
+                answer: "B",
+                explanation: "Đáp án: B. will / help. \"Probably\" (có lẽ) chỉ một khả năng xảy ra trong tương lai, dùng thì tương lai đơn.",
+                highlight: "___________ probably ___________",
+                hint: "Trạng từ 'probably' (có lẽ) thường đi với thì tương lai đơn để diễn tả khả năng xảy ra."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "5. What ___________ you ___________ if you ___________ a lot of money?",
+                options: ["A. do / do / find", "B. will / do / find", "C. did / do / found", "D. are / doing / find"],
+                answer: "B",
+                explanation: "Đáp án: B. will / do / find. Câu điều kiện loại 1. Mệnh đề \"If\" dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn.",
+                highlight: "___________ you ___________ if you ___________",
+                hint: "Đây là câu hỏi trong câu điều kiện loại 1. Mệnh đề 'if' dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "6. I promise I ___________ you tomorrow.",
+                options: ["A. call", "B. will call", "C. am calling", "D. called"],
+                answer: "B",
+                explanation: "Đáp án: B. will call. Lời hứa, dùng thì tương lai đơn.",
+                highlight: "___________",
+                hint: "Khi đưa ra lời hứa, chúng ta thường dùng thì tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "7. If she ___________ late, we ___________ without her.",
+                options: ["A. is / start", "B. is / will start", "C. was / would start", "D. will be / will start"],
+                answer: "B",
+                explanation: "Đáp án: B. is / will start. Câu điều kiện loại 1. Mệnh đề \"If\" dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn.",
+                highlight: "___________ late, we ___________",
+                hint: "Đây là câu điều kiện loại 1. Mệnh đề 'if' dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "8. He ___________ definitely ___________ his best to succeed.",
+                options: ["A. does / try", "B. will / try", "C. is / trying", "D. tries / try"],
+                answer: "B",
+                explanation: "Đáp án: B. will / try. \"Definitely\" (chắc chắn) nhấn mạnh một hành động sẽ xảy ra trong tương lai, dùng thì tương lai đơn.",
+                highlight: "___________ definitely ___________",
+                hint: "Trạng từ 'definitely' (chắc chắn) nhấn mạnh một hành động sẽ xảy ra trong tương lai, sử dụng thì tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "9. We ___________ a picnic if the weather ___________ good.",
+                options: ["A. have / is", "B. will have / is", "C. have / will be", "D. will have / will be"],
+                answer: "B",
+                explanation: "Đáp án: B. will have / is. Câu điều kiện loại 1. Mệnh đề \"If\" dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn.",
+                highlight: "___________ a picnic if the weather ___________",
+                hint: "Đây là câu điều kiện loại 1. Mệnh đề 'if' dùng hiện tại đơn, mệnh đề chính dùng tương lai đơn."
+            },
+            {
+                type: "future_simple_conditional_1",
+                question: "10. By this time next year, I ___________ in a new country.",
+                options: ["A. live", "B. will live", "C. will be living", "D. will have lived"],
+                answer: "C",
+                explanation: "Đáp án: C. will be living. \"By this time next year\" chỉ một thời điểm cụ thể trong tương lai mà hành động sẽ đang diễn ra. Dùng thì tương lai tiếp diễn.",
+                highlight: "___________",
+                hint: "Cụm từ 'By this time next year' chỉ một thời điểm cụ thể trong tương lai. Hành động sẽ đang diễn ra tại thời điểm đó. Sử dụng thì tương lai tiếp diễn."
+            },
+
+            // Dạng 7: Câu điều kiện loại 2 (Conditional Type 2) - 10 câu
+            {
+                type: "conditional_2",
+                question: "1. If I ___________ a bird, I ___________ fly anywhere.",
+                options: ["A. am / will", "B. were / would", "C. was / would", "D. had been / would have"],
+                answer: "B",
+                explanation: "Đáp án: B. were / would. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại. Động từ \"to be\" luôn là \"were\" cho tất cả các ngôi. Mệnh đề chính dùng \"would + V nguyên mẫu\".",
+                highlight: "___________ a bird, I ___________",
+                hint: "Đây là câu điều kiện loại 2, diễn tả một điều không có thật ở hiện tại. Động từ 'to be' trong mệnh đề 'if' luôn là 'were' cho tất cả các ngôi."
+            },
+            {
+                type: "conditional_2",
+                question: "2. If she ___________ more money, she ___________ a bigger house.",
+                options: ["A. has / will buy", "B. had / would buy", "C. had / bought", "D. has / buys"],
+                answer: "B",
+                explanation: "Đáp án: B. had / would buy. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại (cô ấy không có nhiều tiền hơn).",
+                highlight: "___________ more money, she ___________",
+                hint: "Câu điều kiện loại 2 diễn tả một giả định không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "3. If I ___________ you, I ___________ that opportunity.",
+                options: ["A. am / will take", "B. were / would take", "C. was / take", "D. had been / would have taken"],
+                answer: "B",
+                explanation: "Đáp án: B. were / would take. Lời khuyên trong tình huống giả định (tôi không thể là bạn), dùng câu điều kiện loại 2.",
+                highlight: "___________ you, I ___________",
+                hint: "Cấu trúc 'If I were you...' là một cách đưa ra lời khuyên trong tình huống giả định, sử dụng câu điều kiện loại 2."
+            },
+            {
+                type: "conditional_2",
+                question: "4. What ___________ you ___________ if you ___________ a ghost?",
+                options: ["A. will / do / see", "B. would / do / saw", "C. did / do / saw", "D. do / do / see"],
+                answer: "B",
+                explanation: "Đáp án: B. would / do / saw. Câu hỏi trong câu điều kiện loại 2.",
+                highlight: "___________ you ___________ if you ___________",
+                hint: "Đây là câu hỏi trong câu điều kiện loại 2. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "5. If he ___________ here, he ___________ us with the heavy boxes.",
+                options: ["A. is / helps", "B. were / would help", "C. was / helped", "D. had been / would have helped"],
+                answer: "B",
+                explanation: "Đáp án: B. were / would help. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại (anh ấy không ở đây).",
+                highlight: "___________ here, he ___________",
+                hint: "Đây là câu điều kiện loại 2, diễn tả một điều không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn (động từ 'to be' là 'were'), mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "6. If it ___________ not so cold, we ___________ for a walk.",
+                options: ["A. is / go", "B. were / would go", "C. was / went", "D. had been / would have gone"],
+                answer: "B",
+                explanation: "Đáp án: B. were / would go. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại (trời đang lạnh).",
+                highlight: "___________ not so cold, we ___________",
+                hint: "Đây là câu điều kiện loại 2, diễn tả một điều kiện không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn (động từ 'to be' là 'were'), mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "7. She ___________ happier if she ___________ a less stressful job.",
+                options: ["A. will be / has", "B. would be / had", "C. is / has", "D. was / had"],
+                answer: "B",
+                explanation: "Đáp án: B. would be / had. Câu điều kiện loại 2.",
+                highlight: "___________ happier if she ___________",
+                hint: "Câu điều kiện loại 2. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "8. If they ___________ the answer, they ___________ it to you.",
+                options: ["A. know / will tell", "B. knew / would tell", "C. had known / would have told", "D. know / tell"],
+                answer: "B",
+                explanation: "Đáp án: B. knew / would tell. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại (họ không biết câu trả lời).",
+                highlight: "___________ the answer, they ___________",
+                hint: "Câu điều kiện loại 2, diễn tả một điều không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "9. If he ___________ a car, he ___________ to work.",
+                options: ["A. has / will drive", "B. had / would drive", "C. has / drives", "D. had / drove"],
+                answer: "B",
+                explanation: "Đáp án: B. had / would drive. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại (anh ấy không có xe).",
+                highlight: "___________ a car, he ___________",
+                hint: "Câu điều kiện loại 2, diễn tả một điều không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+            {
+                type: "conditional_2",
+                question: "10. If I ___________ a superpower, I ___________ fly.",
+                options: ["A. have / will", "B. had / would", "C. have / can", "D. had / could"],
+                answer: "B",
+                explanation: "Đáp án: B. had / would. Câu điều kiện loại 2, diễn tả điều không có thật ở hiện tại.",
+                highlight: "___________ a superpower, I ___________",
+                hint: "Câu điều kiện loại 2, diễn tả một điều không có thật ở hiện tại. Mệnh đề 'if' dùng quá khứ đơn, mệnh đề chính dùng 'would + V nguyên mẫu'."
+            },
+
+            // Dạng 8: Quá khứ hoàn thành tiếp diễn (Past Perfect Continuous) - 10 câu
+            {
+                type: "past_perfect_continuous",
+                question: "1. He was tired because he ___________ for a long time.",
+                options: ["A. drove", "B. had driven", "C. had been driving", "D. was driving"],
+                answer: "C",
+                explanation: "Đáp án: C. had been driving. Hành động lái xe đã diễn ra liên tục trong một thời gian dài và là nguyên nhân dẫn đến việc anh ấy mệt mỏi ở quá khứ. Nhấn mạnh quá trình, dùng thì quá khứ hoàn thành tiếp diễn.",
+                highlight: "___________",
+                hint: "Tình trạng mệt mỏi ở quá khứ là kết quả của một hành động đã diễn ra liên tục trong một khoảng thời gian dài trước đó. Hãy nghĩ đến thì quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "2. They ___________ for a new house for months when they finally found one.",
+                options: ["A. searched", "B. were searching", "C. had searched", "D. had been searching"],
+                answer: "D",
+                explanation: "Đáp án: D. had been searching. Hành động tìm kiếm nhà đã diễn ra liên tục trong nhiều tháng trước khi họ tìm thấy. Nhấn mạnh quá trình và thời gian kéo dài.",
+                highlight: "___________",
+                hint: "Hành động tìm kiếm đã diễn ra liên tục trong nhiều tháng và kết thúc khi họ tìm thấy nhà. Nhấn mạnh quá trình và thời gian kéo dài, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "3. She ___________ the piano for years before she became a professional.",
+                options: ["A. played", "B. had played", "C. had been playing", "D. was playing"],
+                answer: "C",
+                explanation: "Đáp án: C. had been playing. Hành động chơi piano đã diễn ra liên tục trong nhiều năm và kết thúc tại thời điểm cô ấy trở thành chuyên nghiệp. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động chơi piano đã diễn ra liên tục trong nhiều năm và kết thúc trước khi cô ấy trở thành chuyên nghiệp. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "4. The ground was muddy because it ___________ all night.",
+                options: ["A. rained", "B. had rained", "C. had been raining", "D. was raining"],
+                answer: "C",
+                explanation: "Đáp án: C. had been raining. Hành động trời mưa đã diễn ra liên tục suốt đêm và là nguyên nhân khiến mặt đất lầy lội ở quá khứ. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Tình trạng mặt đất lầy lội ở quá khứ là do hành động trời mưa đã diễn ra liên tục suốt đêm trước đó. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "5. How long ___________ you ___________ when the police arrived?",
+                options: ["A. had / argued", "B. had / been arguing", "C. were / arguing", "D. did / argue"],
+                answer: "B",
+                explanation: "Đáp án: B. had / been arguing. Hỏi về khoảng thời gian hành động đã diễn ra liên tục trước khi một hành động khác trong quá khứ xảy ra.",
+                highlight: "___________ you ___________",
+                hint: "Câu hỏi này hỏi về khoảng thời gian mà một hành động đã diễn ra liên tục trước một thời điểm cụ thể trong quá khứ ('when the police arrived')."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "6. I ___________ on this report for three hours before I took a break.",
+                options: ["A. worked", "B. had worked", "C. had been working", "D. was working"],
+                answer: "C",
+                explanation: "Đáp án: C. had been working. Hành động làm việc trên báo cáo đã diễn ra liên tục trong ba giờ và kết thúc tại thời điểm tôi nghỉ giải lao. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động làm việc trên báo cáo đã diễn ra liên tục trong ba giờ và kết thúc trước khi tôi nghỉ giải lao. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "7. Her eyes were red because she ___________ for a long time.",
+                options: ["A. cried", "B. had cried", "C. had been crying", "D. was crying"],
+                answer: "C",
+                explanation: "Đáp án: C. had been crying. Hành động khóc đã diễn ra liên tục trong một thời gian dài và là nguyên nhân dẫn đến việc cô ấy kiệt sức ở quá khứ. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Tình trạng mắt đỏ ở quá khứ là kết quả của một hành động khóc đã diễn ra liên tục trong một thời gian dài trước đó. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "8. They ___________ the game for an hour before it was called off.",
+                options: ["A. played", "B. had played", "C. had been playing", "D. were playing"],
+                answer: "C",
+                explanation: "Đáp án: C. had been playing. Hành động chơi game đã diễn ra liên tục trong một giờ trước khi nó bị hủy bỏ. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động chơi game đã diễn ra liên tục trong một giờ và kết thúc trước khi trận đấu bị hủy bỏ. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "9. The car broke down because the engine ___________ strange noises for weeks.",
+                options: ["A. made", "B. had made", "C. had been making", "D. was making"],
+                answer: "C",
+                explanation: "Đáp án: C. had been making. Hành động động cơ tạo ra tiếng động lạ đã diễn ra liên tục trong nhiều tuần trước khi xe hỏng. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động động cơ tạo ra tiếng động lạ đã diễn ra liên tục trong nhiều tuần và là nguyên nhân khiến xe hỏng. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "past_perfect_continuous",
+                question: "10. He ___________ for a bus for twenty minutes when it finally arrived.",
+                options: ["A. waited", "B. had waited", "C. had been waiting", "D. was waiting"],
+                answer: "C",
+                explanation: "Đáp án: C. had been waiting. Hành động chờ xe buýt đã diễn ra liên tục trong hai mươi phút trước khi nó đến. Nhấn mạnh quá trình.",
+                highlight: "___________",
+                hint: "Hành động chờ xe buýt đã diễn ra liên tục trong hai mươi phút và kết thúc khi xe đến. Nhấn mạnh quá trình, dùng quá khứ hoàn thành tiếp diễn."
+            },
+
+            // Dạng 9: Liên từ (Conjunctions) - 10 câu
+            {
+                type: "conjunctions",
+                question: "1. It was very cold, ___________ I put on a warm coat.",
+                options: ["A. but", "B. so", "C. although", "D. because"],
+                answer: "B",
+                explanation: "Đáp án: B. so. \"So\" (vì vậy) dùng để chỉ kết quả của một hành động hoặc sự việc. Trời rất lạnh (nguyên nhân) -> tôi mặc áo ấm (kết quả).",
+                highlight: "___________",
+                hint: "Vế trước là nguyên nhân, vế sau là kết quả. Hãy chọn liên từ phù hợp để nối nguyên nhân và kết quả."
+            },
+            {
+                type: "conjunctions",
+                question: "2. ___________ he was sick, he still went to work.",
+                options: ["A. So", "B. Because", "C. Although", "D. But"],
+                answer: "C",
+                explanation: "Đáp án: C. Although. \"Although\" (mặc dù) dùng để diễn tả sự tương phản. Mặc dù ốm (tương phản) nhưng vẫn đi làm.",
+                highlight: "___________",
+                hint: "Hai vế câu có ý nghĩa đối lập nhau: ốm nhưng vẫn đi làm. Hãy chọn liên từ diễn tả sự nhượng bộ, tương phản."
+            },
+            {
+                type: "conjunctions",
+                question: "3. She succeeded ___________ she worked diligently.",
+                options: ["A. but", "B. so", "C. because", "D. although"],
+                answer: "C",
+                explanation: "Đáp án: C. because. \"Because\" (bởi vì) dùng để giải thích nguyên nhân. Cô ấy thành công (kết quả) vì cô ấy làm việc chăm chỉ (nguyên nhân).",
+                highlight: "___________",
+                hint: "Vế sau giải thích lý do cho vế trước. Hãy chọn liên từ diễn tả nguyên nhân."
+            },
+            {
+                type: "conjunctions",
+                question: "4. I wanted to travel, ___________ I didn't have enough money.",
+                options: ["A. so", "B. because", "C. although", "D. d. but"],
+                answer: "D",
+                explanation: "Đáp án: D. but. \"But\" (nhưng) dùng để nối hai ý đối lập hoặc tương phản. Muốn đi du lịch (ý 1) nhưng không đủ tiền (ý đối lập).",
+                highlight: "___________",
+                hint: "Hai vế câu có ý nghĩa đối lập nhau: muốn làm gì đó nhưng không thể vì một lý do. Hãy chọn liên từ diễn tả sự đối lập."
+            },
+            {
+                type: "conjunctions",
+                question: "5. He enjoys playing football ___________ watching basketball.",
+                options: ["A. so", "B. because", "C. and", "D. but"],
+                answer: "C",
+                explanation: "Đáp án: C. and. \"And\" (và) dùng để nối hai ý tưởng hoặc danh sách có tính chất bổ sung.",
+                highlight: "___________",
+                hint: "Anh ấy thích cả hai hoạt động. Hãy chọn liên từ nối hai hoạt động có tính chất bổ sung."
+            },
+            {
+                type: "conjunctions",
+                question: "6. She couldn't sleep ___________ the noise was too loud.",
+                options: ["A. although", "B. C. because", "D. but"],
+                answer: "C",
+                explanation: "Đáp án: C. because. \"Because\" (bởi vì) giải thích lý do.",
+                highlight: "___________",
+                hint: "Vế sau giải thích nguyên nhân của vế trước (không ngủ được vì tiếng ồn). Hãy chọn liên từ diễn tả nguyên nhân."
+            },
+            {
+                type: "conjunctions",
+                question: "7. The traffic was heavy; ___________, we arrived on time.",
+                options: ["A. therefore", "B. however", "C. so", "D. and"],
+                answer: "B",
+                explanation: "Đáp án: B. however. \"However\" (tuy nhiên) dùng để chỉ sự tương phản mạnh mẽ hơn, thường đứng sau dấu chấm phẩy hoặc chấm câu.",
+                highlight: "___________",
+                hint: "Hai vế câu có ý nghĩa đối lập mạnh mẽ: tắc đường nhưng vẫn đến đúng giờ. 'However' thường đứng sau dấu chấm phẩy hoặc chấm."
+            },
+            {
+                type: "conjunctions",
+                question: "8. He studied hard, ___________ he failed the test.",
+                options: ["A. so", "B. but", "C. because", "D. and"],
+                answer: "B",
+                explanation: "Đáp án: B. but. \"But\" (nhưng) nối hai mệnh đề có ý nghĩa đối lập.",
+                highlight: "___________",
+                hint: "Hai vế câu có ý nghĩa đối lập: học chăm chỉ nhưng trượt. Hãy chọn liên từ diễn tả sự đối lập."
+            },
+            {
+                type: "conjunctions",
+                question: "9. You can either call me ___________ send me an email.",
+                options: ["A. nor", "B. or", "C. and", "D. so"],
+                answer: "B",
+                explanation: "Đáp án: B. or. \"Either... or...\" (hoặc... hoặc...) dùng để đưa ra lựa chọn.",
+                highlight: "___________",
+                hint: "Cấu trúc 'either... or...' dùng để đưa ra hai lựa chọn."
+            },
+            {
+                type: "conjunctions",
+                question: "10. ___________ it was raining, she went out without an umbrella.",
+                options: ["A. Because", "B. So", "C. Although", "D. And"],
+                answer: "C",
+                explanation: "Đáp án: C. Although. \"Although\" (mặc dù) diễn tả sự tương phản. Mặc dù trời mưa nhưng cô ấy ra ngoài không ô.",
+                highlight: "___________",
+                hint: "Hai vế câu có ý nghĩa đối lập: trời mưa nhưng vẫn ra ngoài không ô. Hãy chọn liên từ diễn tả sự nhượng bộ, tương phản."
+            },
+
+            // Dạng 10: Giới từ (Prepositions) - 10 câu
+            {
+                type: "prepositions",
+                question: "1. The book is ___________ the table.",
+                options: ["A. in", "B. on", "C. at", "D. under"],
+                answer: "B",
+                explanation: "Đáp án: B. on. \"On\" dùng để chỉ vị trí trên bề mặt.",
+                highlight: "___________",
+                hint: "Quyển sách nằm trên bề mặt của cái bàn. Hãy chọn giới từ chỉ vị trí trên bề mặt."
+            },
+            {
+                type: "prepositions",
+                question: "2. She is good ___________ playing the piano.",
+                options: ["A. in", "B. on", "C. at", "D. for"],
+                answer: "C",
+                explanation: "Đáp án: C. at. \"Good at\" có nghĩa là giỏi về một lĩnh vực hoặc kỹ năng nào đó.",
+                highlight: "___________",
+                hint: "Cụm từ 'good at' có nghĩa là giỏi về một kỹ năng hoặc lĩnh vực nào đó."
+            },
+            {
+                type: "prepositions",
+                question: "3. I will meet you ___________ 7 PM.",
+                options: ["A. in", "B. on", "C. at", "D. by"],
+                answer: "C",
+                explanation: "Đáp án: C. at. \"At\" dùng với thời gian cụ thể.",
+                highlight: "___________",
+                hint: "Với thời gian cụ thể như giờ, phút, chúng ta thường dùng giới từ 'at'."
+            },
+            {
+                type: "prepositions",
+                question: "4. He lives ___________ a small village.",
+                options: ["A. on", "B. at", "C. in", "D. to"],
+                answer: "C",
+                explanation: "Đáp án: C. in. \"In\" dùng với địa điểm lớn (thành phố, quốc gia) hoặc không gian kín (làng, nhà).",
+                highlight: "___________",
+                hint: "Với các địa điểm lớn như thành phố, quốc gia hoặc không gian kín như làng, chúng ta dùng giới từ 'in'."
+            },
+            {
+                type: "prepositions",
+                question: "5. The cat jumped ___________ the fence.",
+                options: ["A. over", "B. on", "C. in", "D. through"],
+                answer: "A",
+                explanation: "Đáp án: A. over. \"Over\" dùng để chỉ sự di chuyển vượt qua một vật cản.",
+                highlight: "___________",
+                hint: "Con mèo di chuyển từ bên này sang bên kia của hàng rào. Hãy chọn giới từ chỉ sự vượt qua một vật cản."
+            },
+            {
+                type: "prepositions",
+                question: "6. She is afraid ___________ spiders.",
+                options: ["A. from", "B. with", "C. of", "D. by"],
+                answer: "C",
+                explanation: "Đáp án: C. of. \"Afraid of\" có nghĩa là sợ hãi cái gì.",
+                highlight: "___________",
+                hint: "Cụm từ 'afraid of' có nghĩa là sợ hãi cái gì đó."
+            },
+            {
+                type: "prepositions",
+                question: "7. We are going ___________ vacation next week.",
+                options: ["A. in", "B. on", "C. at", "D. for"],
+                answer: "B",
+                explanation: "Đáp án: B. on. \"On vacation\" là cụm từ cố định.",
+                highlight: "___________",
+                hint: "Cụm từ cố định 'on vacation' có nghĩa là đi nghỉ mát."
+            },
+            {
+                type: "prepositions",
+                question: "8. He arrived ___________ the airport late.",
+                options: ["A. in", "B. on", "C. at", "D. to"],
+                answer: "C",
+                explanation: "Đáp án: C. at. \"At\" dùng với địa điểm cụ thể (sân bay, nhà ga).",
+                highlight: "___________",
+                hint: "Với các địa điểm cụ thể như sân bay, nhà ga, chúng ta dùng giới từ 'at'."
+            },
+            {
+                type: "prepositions",
+                question: "9. She is interested ___________ learning new languages.",
+                options: ["A. in", "B. on", "C. at", "D. for"],
+                answer: "A",
+                explanation: "Đáp án: A. in. \"Interested in\" có nghĩa là quan tâm đến cái gì.",
+                highlight: "___________",
+                hint: "Cụm từ 'interested in' có nghĩa là quan tâm đến cái gì đó."
+            },
+            {
+                type: "prepositions",
+                question: "10. The meeting will be held ___________ Monday morning.",
+                options: ["A. in", "B. on", "C. at", "D. by"],
+                answer: "B",
+                explanation: "Đáp án: B. on. \"On\" dùng với ngày trong tuần hoặc ngày cụ thể.",
+                highlight: "___________",
+                hint: "Với các ngày trong tuần hoặc ngày cụ thể, chúng ta dùng giới từ 'on'."
+            },
+
+            // Dạng 11: Mạo từ (Articles) - 10 câu
+            {
+                type: "articles",
+                question: "1. She is ___________ excellent student.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "B",
+                explanation: "Đáp án: B. an. \"An\" dùng trước danh từ hoặc tính từ bắt đầu bằng nguyên âm (e trong excellent).",
+                highlight: "___________",
+                hint: "Tính từ 'excellent' bắt đầu bằng một nguyên âm. Hãy chọn mạo từ không xác định phù hợp."
+            },
+            {
+                type: "articles",
+                question: "2. ___________ sun rises in the east.",
+                options: ["A. A", "B. An", "C. The", "D. No article"],
+                answer: "C",
+                explanation: "Đáp án: C. The. \"The\" dùng với những vật thể là duy nhất (mặt trời, mặt trăng, trái đất).",
+                highlight: "___________",
+                hint: "Mặt trời là một vật thể duy nhất. Hãy chọn mạo từ xác định phù hợp."
+            },
+            {
+                type: "articles",
+                question: "3. I saw ___________ old man in the park.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "B",
+                explanation: "Đáp án: B. an. \"An\" dùng trước danh từ hoặc tính từ bắt đầu bằng nguyên âm (o trong old).",
+                highlight: "___________",
+                hint: "Tính từ 'old' bắt đầu bằng một nguyên âm. Hãy chọn mạo từ không xác định phù hợp."
+            },
+            {
+                type: "articles",
+                question: "4. He is ___________ doctor.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "A",
+                explanation: "Đáp án: A. a. \"A\" dùng trước danh từ chỉ nghề nghiệp khi nói chung.",
+                highlight: "___________",
+                hint: "Khi nói về nghề nghiệp một cách chung chung, chúng ta dùng mạo từ không xác định."
+            },
+            {
+                type: "articles",
+                question: "5. ___________ Eiffel Tower is in Paris.",
+                options: ["A. A", "B. An", "C. The", "D. No article"],
+                answer: "C",
+                explanation: "Đáp án: C. The. \"The\" dùng với các công trình kiến trúc nổi tiếng.",
+                highlight: "___________",
+                hint: "Tháp Eiffel là một công trình kiến trúc nổi tiếng, duy nhất. Hãy chọn mạo từ xác định."
+            },
+            {
+                type: "articles",
+                question: "6. Do you like ___________ coffee?",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "D",
+                explanation: "Đáp án: D. no article. Không dùng mạo từ khi nói về danh từ không đếm được (coffee) một cách chung chung.",
+                highlight: "___________",
+                hint: "Khi nói về danh từ không đếm được (như 'coffee') một cách chung chung, chúng ta không dùng mạo từ."
+            },
+            {
+                type: "articles",
+                question: "7. She plays ___________ piano very well.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "C",
+                explanation: "Đáp án: C. the. \"The\" dùng trước tên các nhạc cụ khi nói về việc chơi chúng.",
+                highlight: "___________",
+                hint: "Khi nói về việc chơi một nhạc cụ cụ thể, chúng ta dùng mạo từ 'the'."
+            },
+            {
+                type: "articles",
+                question: "8. I want to buy ___________ new car.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "A",
+                explanation: "Đáp án: A. a. \"A\" dùng trước danh từ số ít đếm được khi nói về một vật chưa xác định.",
+                highlight: "___________",
+                hint: "Bạn muốn mua một chiếc xe mới, chưa xác định chiếc nào. Hãy chọn mạo từ không xác định phù hợp."
+            },
+            {
+                type: "articles",
+                question: "9. ___________ Amazon River is the longest river in South America.",
+                options: ["A. A", "B. An", "C. The", "D. No article"],
+                answer: "C",
+                explanation: "Đáp án: C. The. \"The\" dùng trước tên các con sông.",
+                highlight: "___________",
+                hint: "Với tên các con sông, chúng ta dùng mạo từ 'the'."
+            },
+            {
+                type: "articles",
+                question: "10. He is ___________ honest man.",
+                options: ["A. a", "B. an", "C. the", "D. no article"],
+                answer: "B",
+                explanation: "Đáp án: B. an. Mặc dù \"honest\" bắt đầu bằng chữ 'h', nhưng âm đầu tiên là nguyên âm /ɒ/, nên dùng \"an\".",
+                highlight: "___________",
+                hint: "Mặc dù 'honest' bắt đầu bằng chữ 'h', nhưng âm đầu tiên là nguyên âm. Hãy chọn mạo từ không xác định phù hợp với cách phát âm."
+            },
+
+            // Dạng 12: Động từ khuyết thiếu (Modal Verbs) - 10 câu
+            {
+                type: "modal_verbs",
+                question: "1. You ___________ finish your homework before watching TV.",
+                options: ["A. can", "B. may", "C. should", "D. might"],
+                answer: "C",
+                explanation: "Đáp án: C. should. \"Should\" dùng để đưa ra lời khuyên hoặc nghĩa vụ nhẹ.",
+                highlight: "___________",
+                hint: "Câu này đưa ra một lời khuyên hoặc nghĩa vụ nhẹ nhàng. Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+            {
+                type: "modal_verbs",
+                question: "2. I ___________ swim when I was five years old.",
+                options: ["A. can", "B. could", "C. may", "D. must"],
+                answer: "B",
+                explanation: "Đáp án: B. could. \"Could\" là dạng quá khứ của \"can\", chỉ khả năng trong quá khứ.",
+                highlight: "___________",
+                hint: "Câu này nói về một khả năng trong quá khứ ('when I was five years old'). Hãy chọn dạng quá khứ của động từ khuyết thiếu chỉ khả năng."
+            },
+            {
+                question: "3. ___________ I borrow your pen, please?",
+                options: ["A. Must", "B. Will", "C. May", "D. Should"],
+                answer: "C",
+                explanation: "Đáp án: C. May. \"May\" dùng để xin phép một cách lịch sự.",
+                highlight: "___________",
+                hint: "Đây là một câu hỏi xin phép một cách lịch sự. Hãy chọn động từ khuyết thiếu phù hợp để xin phép."
+            },
+            {
+                type: "modal_verbs",
+                question: "4. You ___________ not smoke in this hospital.",
+                options: ["A. can", "B. may", "C. must", "D. should"],
+                answer: "C",
+                explanation: "Đáp án: C. must. \"Must not\" (hoặc mustn't) dùng để chỉ sự cấm đoán hoặc điều không được phép làm.",
+                highlight: "___________",
+                hint: "Câu này diễn tả một sự cấm đoán hoặc điều không được phép làm. Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+            {
+                type: "modal_verbs",
+                question: "5. He ___________ be home by now; he left hours ago.",
+                options: ["A. can", "B. might", "C. must", "D. should"],
+                answer: "C",
+                explanation: "Đáp án: C. must. \"Must\" dùng để diễn tả sự suy luận logic, chắc chắn (gần như chắc chắn).",
+                highlight: "___________",
+                hint: "Anh ấy đã đi nhiều giờ trước, nên chắc chắn bây giờ anh ấy phải ở nhà. Hãy chọn động từ khuyết thiếu diễn tả sự suy luận logic, chắc chắn."
+            },
+            {
+                type: "modal_verbs",
+                question: "6. It ___________ rain tomorrow, but I'm not sure.",
+                options: ["A. will", "B. must", "C. might", "D. should"],
+                answer: "C",
+                explanation: "Đáp án: C. might. \"Might\" dùng để diễn tả khả năng thấp hoặc không chắc chắn trong tương lai.",
+                highlight: "___________",
+                hint: "Câu này diễn tả một khả năng không chắc chắn trong tương lai ('but I'm not sure'). Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+            {
+                type: "modal_verbs",
+                question: "7. She ___________ speak three languages fluently.",
+                options: ["A. must", "B. should", "C. can", "D. would"],
+                answer: "C",
+                explanation: "Đáp án: C. can. \"Can\" dùng để chỉ khả năng hoặc năng lực.",
+                highlight: "___________",
+                hint: "Câu này nói về khả năng hoặc năng lực của cô ấy. Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+            {
+                type: "modal_verbs",
+                question: "8. You ___________ to wear a helmet when riding a motorbike.",
+                options: ["A. must", "B. should", "C. ought", "D. can"],
+                answer: "C",
+                explanation: "Đáp án: C. ought. \"Ought to\" có nghĩa tương tự như \"should\", dùng để đưa ra lời khuyên hoặc nghĩa vụ.",
+                highlight: "___________",
+                hint: "Cụm từ 'to wear' gợi ý rằng cần một động từ khuyết thiếu đi kèm với 'to'. Hãy chọn động từ khuyết thiếu phù hợp để đưa ra lời khuyên."
+            },
+            {
+                type: "modal_verbs",
+                question: "9. We ___________ leave now or we'll miss the train.",
+                options: ["A. may", "B. might", "C. must", "D. could"],
+                answer: "C",
+                explanation: "Đáp án: C. must. \"Must\" dùng để chỉ sự cần thiết hoặc bắt buộc.",
+                highlight: "___________",
+                hint: "Nếu không đi bây giờ thì sẽ lỡ tàu. Đây là một sự cần thiết hoặc bắt buộc. Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+            {
+                type: "modal_verbs",
+                question: "10. ___________ you please open the window?",
+                options: ["A. May", "B. Should", "C. Would", "D. Must"],
+                answer: "C",
+                explanation: "Đáp án: C. Would. \"Would you please...\" dùng để yêu cầu một cách lịch sự.",
+                highlight: "___________",
+                hint: "Đây là một câu hỏi yêu cầu một cách lịch sự. Hãy chọn động từ khuyết thiếu phù hợp."
+            },
+
+            // Dạng 13: Câu bị động (Passive Voice) - 10 câu
+            {
+                type: "passive_voice",
+                question: "1. The letter ___________ by John yesterday.",
+                options: ["A. wrote", "B. was written", "C. is written", "D. writes"],
+                answer: "B",
+                explanation: "Đáp án: B. was written. Câu bị động thì quá khứ đơn. Cấu trúc: S + was/were + PII + (by O).",
+                highlight: "___________",
+                hint: "Lá thư 'được' viết bởi John vào hôm qua. Đây là câu bị động ở thì quá khứ đơn. Hãy chọn dạng động từ phù hợp."
+            },
+            {
+                type: "passive_voice",
+                question: "2. English ___________ all over the world.",
+                options: ["A. speaks", "B. is spoken", "C. spoke", "D. has spoken"],
+                answer: "B",
+                explanation: "Đáp án: B. is spoken. Câu bị động thì hiện tại đơn. Cấu trúc: S + am/is/are + PII + (by O).",
+                highlight: "___________",
+                hint: "Tiếng Anh 'được' nói trên toàn thế giới. Đây là một sự thật chung, ở thể bị động, thì hiện tại đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "3. The new bridge ___________ next year.",
+                options: ["A. will build", "B. will be built", "C. builds", "D. is building"],
+                answer: "B",
+                explanation: "Đáp án: B. will be built. Câu bị động thì tương lai đơn. Cấu trúc: S + will be + PII + (by O).",
+                highlight: "___________",
+                hint: "Cây cầu mới 'sẽ được' xây dựng vào năm tới. Đây là câu bị động ở thì tương lai đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "4. The cake ___________ by my mother.",
+                options: ["A. made", "B. was made", "C. makes", "D. has made"],
+                answer: "B",
+                explanation: "Đáp án: B. was made. Câu bị động thì quá khứ đơn, diễn tả hành động đã hoàn thành trong quá khứ.",
+                highlight: "___________",
+                hint: "Cái bánh 'được' làm bởi mẹ tôi. Đây là câu bị động ở thì quá khứ đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "5. The report ___________ by the manager right now.",
+                options: ["A. is writing", "B. is being written", "C. writes", "D. wrote"],
+                answer: "B",
+                explanation: "Đáp án: B. is being written. Câu bị động thì hiện tại tiếp diễn. Cấu trúc: S + am/is/are + being + PII + (by O).",
+                highlight: "___________",
+                hint: "Báo cáo 'đang được' viết bởi người quản lý ngay bây giờ. Đây là câu bị động ở thì hiện tại tiếp diễn."
+            },
+            {
+                type: "passive_voice",
+                question: "6. This song ___________ by millions of people.",
+                options: ["A. loves", "B. is loved", "C. loved", "D. has loved"],
+                answer: "B",
+                explanation: "Đáp án: B. is loved. Câu bị động thì hiện tại đơn, diễn tả một sự thật chung.",
+                highlight: "___________",
+                hint: "Bài hát này 'được' yêu thích bởi hàng triệu người. Đây là câu bị động ở thì hiện tại đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "7. The car ___________ before they sold it.",
+                options: ["A. repaired", "B. was repaired", "C. had repaired", "D. had been repaired"],
+                answer: "D",
+                explanation: "Đáp án: D. had been repaired. Câu bị động thì quá khứ hoàn thành. Cấu trúc: S + had been + PII + (by O). Hành động sửa xe xảy ra trước khi bán.",
+                highlight: "___________",
+                hint: "Chiếc xe 'đã được' sửa trước khi họ bán nó. Hành động sửa xe xảy ra trước hành động bán. Đây là câu bị động ở thì quá khứ hoàn thành."
+            },
+            {
+                type: "passive_voice",
+                question: "8. A new hospital ___________ in our town next month.",
+                options: ["A. is opening", "B. will be opened", "C. opens", "D. has opened"],
+                answer: "B",
+                explanation: "Đáp án: B. will be opened. Câu bị động thì tương lai đơn, diễn tả một sự kiện sẽ xảy ra trong tương lai.",
+                highlight: "___________",
+                hint: "Một bệnh viện mới 'sẽ được' mở ở thị trấn của chúng ta vào tháng tới. Đây là câu bị động ở thì tương lai đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "9. The decision ___________ by the committee.",
+                options: ["A. makes", "B. is made", "C. made", "D. has made"],
+                answer: "B",
+                explanation: "Đáp án: B. is made. Câu bị động thì hiện tại đơn, diễn tả một sự thật hoặc hành động thường xuyên.",
+                highlight: "___________",
+                hint: "Quyết định 'được' đưa ra bởi ủy ban. Đây là câu bị động ở thì hiện tại đơn."
+            },
+            {
+                type: "passive_voice",
+                question: "10. The window ___________ by the strong wind.",
+                options: ["A. broke", "B. was broken", "C. breaks", "D. has broken"],
+                answer: "B",
+                explanation: "Đáp án: B. was broken. Câu bị động thì quá khứ đơn, diễn tả hành động đã xảy ra trong quá khứ.",
+                highlight: "___________",
+                hint: "Cửa sổ 'bị' vỡ bởi gió mạnh. Đây là câu bị động ở thì quá khứ đơn."
+            },
+
+            // Dạng 14: Câu trực tiếp/gián tiếp (Direct/Reported Speech) - 10 câu
+            {
+                type: "reported_speech",
+                question: "1. He said, \"I am busy.\"",
+                options: ["A. He said he is busy.", "B. He said he was busy.", "C. He said I am busy.", "D. He said he had been busy."],
+                answer: "B",
+                explanation: "Đáp án: B. He said he was busy. Khi chuyển từ trực tiếp sang gián tiếp, thì hiện tại đơn (am) lùi về quá khứ đơn (was).",
+                highlight: "\"I am busy.\"",
+                hint: "Khi chuyển từ câu trực tiếp sang gián tiếp, thì hiện tại đơn trong câu trực tiếp sẽ lùi về quá khứ đơn."
+            },
+            {
+                type: "reported_speech",
+                question: "2. She asked, \"Do you like coffee?\"",
+                options: ["A. She asked if I like coffee.", "B. She asked if I liked coffee.", "C. She asked that if I liked coffee.", "D. She asked if do I like coffee."],
+                answer: "B",
+                explanation: "Đáp án: B. She asked if I liked coffee. Câu hỏi Yes/No trong gián tiếp dùng \"if\" hoặc \"whether\", thì hiện tại đơn (do you like) lùi về quá khứ đơn (liked).",
+                highlight: "\"Do you like coffee?\"",
+                hint: "Với câu hỏi Yes/No trong câu gián tiếp, chúng ta dùng 'if' hoặc 'whether' và lùi thì động từ."
+            },
+            {
+                type: "reported_speech",
+                question: "3. They said, \"We will go tomorrow.\"",
+                options: ["A. They said they will go tomorrow.", "B. They said they would go tomorrow.", "C. They said they would go the next day.", "D. They said we would go the next day."],
+                answer: "C",
+                explanation: "Đáp án: C. They said they would go the next day. \"Will\" chuyển thành \"would\", \"tomorrow\" chuyển thành \"the next day\".",
+                highlight: "\"We will go tomorrow.\"",
+                hint: "Trong câu gián tiếp, 'will' chuyển thành 'would' và các trạng từ chỉ thời gian cũng thay đổi ('tomorrow' thành 'the next day')."
+            },
+            {
+                type: "reported_speech",
+                question: "4. He told me, \"Don't open the door!\"",
+                options: ["A. He told me not to open the door.", "B. He told me to not open the door.", "C. He told me don't open the door.", "D. He told me if I didn't open the door."],
+                answer: "A",
+                explanation: "Đáp án: A. He told me not to open the door. Câu mệnh lệnh phủ định chuyển thành \"not to + V nguyên mẫu\".",
+                highlight: "\"Don't open the door!\"",
+                hint: "Câu mệnh lệnh phủ định trong câu trực tiếp khi chuyển sang gián tiếp sẽ dùng cấu trúc 'not to + V nguyên mẫu'."
+            },
+            {
+                type: "reported_speech",
+                question: "5. Mary said, \"I have finished my work.\"",
+                options: ["A. Mary said she has finished her work.", "B. Mary said she had finished her work.", "C. Mary said I had finished my work.", "D. Mary said she finished her work."],
+                answer: "B",
+                explanation: "Đáp án: B. Mary said she had finished her work. Thì hiện tại hoàn thành (have finished) lùi về quá khứ hoàn thành (had finished).",
+                highlight: "\"I have finished my work.\"",
+                hint: "Khi chuyển thì hiện tại hoàn thành từ câu trực tiếp sang gián tiếp, nó sẽ lùi về quá khứ hoàn thành."
+            },
+            {
+                type: "reported_speech",
+                question: "6. The teacher asked, \"What is your name?\"",
+                options: ["A. The teacher asked what is my name.", "B. The teacher asked what my name was.", "C. The teacher asked what was my name.", "D. The teacher asked what your name is."],
+                answer: "B",
+                explanation: "Đáp án: B. The teacher asked what my name was. Câu hỏi có từ để hỏi (Wh-question) trong gián tiếp giữ nguyên từ để hỏi, sau đó là cấu trúc chủ ngữ + động từ (không đảo ngữ), thì hiện tại đơn (is) lùi về quá khứ đơn (was).",
+                highlight: "\"What is your name?\"",
+                hint: "Với câu hỏi có từ để hỏi (Wh-question) trong câu gián tiếp, giữ nguyên từ để hỏi, sau đó là chủ ngữ + động từ (không đảo ngữ) và lùi thì động từ."
+            },
+            {
+                type: "reported_speech",
+                question: "7. She said, \"I was watching TV.\"",
+                options: ["A. She said she was watching TV.", "B. She said she had watched TV.", "C. She said she had been watching TV.", "D. She said I was watching TV."],
+                answer: "C",
+                explanation: "Đáp án: C. She said she had been watching TV. Thì quá khứ tiếp diễn (was watching) lùi về quá khứ hoàn thành tiếp diễn (had been watching).",
+                highlight: "\"I was watching TV.\"",
+                hint: "Khi chuyển thì quá khứ tiếp diễn từ câu trực tiếp sang gián tiếp, nó sẽ lùi về quá khứ hoàn thành tiếp diễn."
+            },
+            {
+                type: "reported_speech",
+                question: "8. My friend advised me, \"You should study harder.\"",
+                options: ["A. My friend advised me that I should study harder.", "B. My friend advised me to study harder.", "C. My friend advised me that I study harder.", "D. My friend advised me I should study harder."],
+                answer: "B",
+                explanation: "Đáp án: B. My friend advised me to study harder. \"Advise\" thường dùng với cấu trúc \"advise + O + to V\".",
+                highlight: "\"You should study harder.\"",
+                hint: "Động từ 'advise' thường đi với cấu trúc 'advise + tân ngữ + to V'."
+            },
+            {
+                type: "reported_speech",
+                question: "9. He said, \"I can help you.\"",
+                options: ["A. He said he can help me.", "B. He said he could help me.", "C. He said I can help you.", "D. He said he would help me."],
+                answer: "B",
+                explanation: "Đáp án: B. He said he could help me. \"Can\" chuyển thành \"could\".",
+                highlight: "\"I can help you.\"",
+                hint: "Trong câu gián tiếp, động từ khuyết thiếu 'can' sẽ chuyển thành 'could'."
+            },
+            {
+                type: "reported_speech",
+                question: "10. They announced, \"The flight has been delayed.\"",
+                options: ["A. They announced that the flight has been delayed.", "B. They announced that the flight had been delayed.", "C. They announced the flight was delayed.", "D. They announced the flight has delayed."],
+                answer: "B",
+                explanation: "Đáp án: B. They announced that the flight had been delayed. Thì hiện tại hoàn thành (has been delayed) lùi về quá khứ hoàn thành (had been delayed).",
+                highlight: "\"The flight has been delayed.\"",
+                hint: "Khi chuyển thì hiện tại hoàn thành từ câu trực tiếp sang gián tiếp, nó sẽ lùi về quá khứ hoàn thành."
+            }
+        ];
+
+        // Extend quizQuestions with state for navigator and retry logic
+        // This initialization ensures all questions have the necessary properties
+        quizQuestions.forEach(q => {
+            q.answered = false;
+            q.isCorrect = null; // null: not answered, true: correct, false: incorrect
+            q.userAnswer = null; // Store the user's selected answer text
+            q.hintUsed = false; // New property to track if hint was used for this question
+        });
+
+        // Quiz functionality state variables
+        let currentQuizIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        let tempRetryQuestions = []; // Stores full question objects for retry
+        let tempRetryIndex = 0; // Current position in tempRetryQuestions
+
+        let quizStartTime = null; // To store the start timestamp
+        let quizEndTime = null;   // To store the end timestamp
+
+        const quizQuestionElem = document.getElementById('quiz-question');
+        const quizOptionsElem = document.getElementById('quiz-options');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions-quiz');
+        const submitAnswerBtn = document.getElementById('submit-answer-btn');
+        const hintBtn = document.getElementById('hint-btn'); // New hint button element
+        const nextQuizBtn = document.getElementById('next-quiz-btn');
+        const resetQuizBtn = document.getElementById('reset-quiz-btn');
+        const restartAllBtn = document.getElementById('restart-all-btn'); // Nút làm lại từ đầu
+        const exportResultsBtn = document.getElementById('export-results-btn');
+        const quizScoreElem = document.getElementById('quiz-score');
+        const quizTotalQuestionsElem = document.getElementById('quiz-total-questions-score');
+        const resultMessageElem = document.getElementById('result-message');
+        const explanationTextElem = document.getElementById('explanation-text');
+        const hintTextElem = document.getElementById('hint-text'); // New hint text element
+        const questionNavigatorElem = document.getElementById('question-navigator');
+
+        totalQuestionsSpan.textContent = quizQuestions.length;
+        quizTotalQuestionsElem.textContent = quizQuestions.length;
+
+        /**
+         * Saves the current quiz state to local storage.
+         */
+        function saveQuizState() {
+            const stateToSave = {
+                quizQuestionsState: quizQuestions.map(q => ({
+                    answered: q.answered,
+                    isCorrect: q.isCorrect,
+                    userAnswer: q.userAnswer,
+                    hintUsed: q.hintUsed // Save hintUsed state
+                })),
+                currentQuizIndex: currentQuizIndex,
+                score: score,
+                quizStartTime: quizStartTime,
+                quizEndTime: quizEndTime
+            };
+            localStorage.setItem('advancedGrammarQuizState_v2', JSON.stringify(stateToSave));
+        }
+
+        /**
+         * Loads the quiz state from local storage.
+         */
+        function loadQuizState() {
+            const savedState = localStorage.getItem('advancedGrammarQuizState_v2');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+
+                // Restore question states
+                parsedState.quizQuestionsState.forEach((savedQState, index) => {
+                    if (quizQuestions[index]) { // Ensure question exists
+                        quizQuestions[index].answered = savedQState.answered;
+                        quizQuestions[index].isCorrect = savedQState.isCorrect;
+                        quizQuestions[index].userAnswer = savedQState.userAnswer;
+                        quizQuestions[index].hintUsed = savedQState.hintUsed || false; // Restore hintUsed, default to false
+                    }
+                });
+
+                currentQuizIndex = parsedState.currentQuizIndex;
+                score = parsedState.score;
+                quizScoreElem.textContent = score;
+                quizStartTime = parsedState.quizStartTime;
+                quizEndTime = parsedState.quizEndTime;
+
+                // Reset retry specific state on load to avoid inconsistencies
+                tempRetryQuestions = [];
+                tempRetryIndex = 0;
+            } else {
+                // If no saved state, initialize quizStartTime
+                quizStartTime = Date.now();
+                saveQuizState(); // Save initial state
+            }
+        }
+
+        /**
+         * Loads the current quiz question into the UI.
+         */
+        function loadQuizQuestion() {
+            let q;
+            let isMainQuizQuestion;
+
+            // Determine which question to load: from retry queue or main quiz
+            if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length) {
+                q = tempRetryQuestions[tempRetryIndex];
+                isMainQuizQuestion = false;
+            } else {
+                // If retry queue is exhausted or not active, move to the next main question
+                if (tempRetryQuestions.length > 0 && tempRetryIndex >= tempRetryQuestions.length) {
+                    // This means a retry sequence just finished
+                    currentQuizIndex++; // Move to the next original question
+                }
+                tempRetryQuestions = []; // Clear retry queue
+                tempRetryIndex = 0; // Reset retry index
+
+                if (currentQuizIndex >= quizQuestions.length) {
+                    showFinalScore();
+                    return;
+                }
+                q = quizQuestions[currentQuizIndex];
+                isMainQuizQuestion = true;
+            }
+
+            // Apply highlighting to the question text
+            if (q.highlight) {
+                const highlightedQuestion = q.question.replace(q.highlight, `<span class="highlight-keyword">${q.highlight}</span>`);
+                quizQuestionElem.innerHTML = highlightedQuestion;
+            } else {
+                quizQuestionElem.textContent = q.question;
+            }
+
+            quizOptionsElem.innerHTML = '';
+            selectedOption = null;
+
+            resultMessageElem.classList.add('hidden');
+            explanationTextElem.classList.add('hidden');
+            hintTextElem.classList.add('hidden'); // Hide hint when new question loads
+
+            submitAnswerBtn.classList.remove('hidden');
+            hintBtn.classList.remove('hidden'); // Show hint button by default
+            nextQuizBtn.classList.add('hidden');
+            resetQuizBtn.classList.add('hidden');
+            exportResultsBtn.classList.remove('hidden'); // Always show export button
+
+            // Update hint button state based on whether hint was used for this question
+            if (q.hintUsed) {
+                hintBtn.disabled = true;
+                hintBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                hintTextElem.textContent = q.hint; // Show hint if already used
+                hintTextElem.classList.remove('hidden');
+            } else {
+                hintBtn.disabled = false;
+                hintBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Update question number display only for main quiz questions
+            if (isMainQuizQuestion) {
+                currentQuestionSpan.textContent = currentQuizIndex + 1;
+            } else {
+                // For retry questions, show the original question number
+                const originalIndex = quizQuestions.indexOf(q); // Find original index
+                currentQuestionSpan.textContent = `${originalIndex + 1} (Luyện tập)`;
+            }
+
+
+            q.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.dataset.index = index;
+                optionDiv.innerHTML = `<button>${option}</button>`;
+                optionDiv.addEventListener('click', () => selectOption(optionDiv));
+                quizOptionsElem.appendChild(optionDiv);
+            });
+
+            // If the question was already answered, display feedback immediately
+            if (q.answered) {
+                const userAnswerChar = q.userAnswer ? q.userAnswer.charAt(0) : null; // Handle null userAnswer
+                const correctOptionChar = q.answer;
+
+                Array.from(quizOptionsElem.children).forEach(optionDiv => {
+                    const optionChar = optionDiv.querySelector('button').textContent.trim().charAt(0);
+                    if (optionChar === userAnswerChar) { // Re-select user's previous answer
+                        optionDiv.classList.add('selected');
+                    }
+                    if (optionChar === correctOptionChar) {
+                        optionDiv.classList.add('correct');
+                    } else if (optionChar === userAnswerChar && optionChar !== correctOptionChar) {
+                        optionDiv.classList.add('incorrect');
+                    }
+                    optionDiv.removeEventListener('click', () => selectOption(optionDiv));
+                    optionDiv.style.cursor = 'default';
+                });
+
+                resultMessageElem.textContent = q.isCorrect ? 'Chính xác!' : 'Sai rồi.';
+                resultMessageElem.classList.remove('hidden');
+                resultMessageElem.classList.toggle('correct', q.isCorrect);
+                resultMessageElem.classList.toggle('incorrect', !q.isCorrect);
+                explanationTextElem.textContent = q.explanation;
+                explanationTextElem.classList.remove('hidden');
+                submitAnswerBtn.classList.add('hidden'); // Hide submit if already answered
+                hintBtn.classList.add('hidden'); // Hide hint button if already answered
+
+                // Determine next button visibility based on whether it's a retry question or main question
+                if (!isMainQuizQuestion && tempRetryIndex < tempRetryQuestions.length -1) { // More retries in queue
+                    nextQuizBtn.textContent = 'Tiếp tục luyện tập';
+                    nextQuizBtn.classList.remove('hidden');
+                } else if (currentQuizIndex < quizQuestions.length - 1) { // Main quiz not finished
+                    nextQuizBtn.textContent = 'Câu Tiếp Theo';
+                    nextQuizBtn.classList.remove('hidden');
+                } else { // End of quiz
+                    resetQuizBtn.classList.remove('hidden');
+                }
+            }
+
+            updateNavigatorUI(); // Update navigator after loading question
+        }
+
+        /**
+         * Handles selecting an option for the current quiz question.
+         * @param {HTMLElement} optionDiv - The div element representing the selected option.
+         */
+        function selectOption(optionDiv) {
+            // Get the current question object, whether it's from main quiz or retry queue
+            let q;
+            if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length) {
+                q = tempRetryQuestions[tempRetryIndex];
+            } else {
+                q = quizQuestions[currentQuizIndex];
+            }
+
+            if (q.answered) return; // Prevent selecting if already answered
+
+            if (selectedOption) {
+                selectedOption.classList.remove('selected');
+            }
+            selectedOption = optionDiv;
+            selectedOption.classList.add('selected');
+        }
+
+        /**
+         * Checks the user's answer and provides feedback.
+         */
+        function checkAnswer() {
+            if (!selectedOption) {
+                showGeneralMessage('Vui lòng chọn một đáp án!', 'warning');
+                return;
+            }
+
+            // Get the current question object, whether it's from main quiz or retry queue
+            let q;
+            let isMainQuizQuestion;
+            if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length) {
+                q = tempRetryQuestions[tempRetryIndex];
+                isMainQuizQuestion = false;
+            } else {
+                q = quizQuestions[currentQuizIndex];
+                isMainQuizQuestion = true;
+            }
+
+            if (q.answered) return; // Prevent checking if already answered
+
+            const userAnswerText = selectedOption.querySelector('button').textContent.trim();
+            const userAnswerChar = userAnswerText.charAt(0);
+            const isCorrectAnswer = (userAnswerChar === q.answer);
+
+            q.answered = true; // Mark this specific question object as answered
+            q.isCorrect = isCorrectAnswer;
+            q.userAnswer = userAnswerText;
+
+            // If it's a main quiz question and answered, save the state.
+            // For retry questions, their state is temporary and not saved to main quizQuestions until they become main.
+            if (isMainQuizQuestion) {
+                saveQuizState();
+            }
+
+
+            if (isCorrectAnswer) {
+                selectedOption.classList.add('correct');
+                resultMessageElem.textContent = 'Chính xác!';
+                resultMessageElem.classList.remove('incorrect', 'hidden');
+                resultMessageElem.classList.add('correct');
+                score++;
+            } else {
+                selectedOption.classList.add('incorrect');
+                resultMessageElem.textContent = 'Sai rồi.';
+                resultMessageElem.classList.remove('correct', 'hidden');
+                resultMessageElem.classList.add('incorrect');
+
+                // Highlight the correct answer
+                Array.from(quizOptionsElem.children).forEach(optionDiv => {
+                    if (optionDiv.querySelector('button').textContent.trim().charAt(0) === q.answer) {
+                        optionDiv.classList.add('correct');
+                    }
+                });
+            }
+            explanationTextElem.textContent = q.explanation;
+            explanationTextElem.classList.remove('hidden');
+            quizScoreElem.textContent = score;
+
+            submitAnswerBtn.classList.add('hidden');
+            hintBtn.classList.add('hidden'); // Hide hint button after checking answer
+            hintTextElem.classList.add('hidden'); // Hide hint after checking answer
+
+            // Logic for generating retry questions if incorrect and not already in retry mode
+            if (!isCorrectAnswer && isMainQuizQuestion) {
+                tempRetryQuestions = []; // Clear previous retry queue
+                tempRetryIndex = 0;
+
+                const currentQuestionType = q.type;
+                const potentialRetries = quizQuestions.filter(
+                    (question, index) =>
+                        question.type === currentQuestionType &&
+                        !question.answered // Only unanswered questions of the same type
+                );
+
+                // Shuffle and pick up to 5 unique questions
+                const shuffledRetries = potentialRetries.sort(() => 0.5 - Math.random());
+                tempRetryQuestions = shuffledRetries.slice(0, 5);
+
+                if (tempRetryQuestions.length > 0) {
+                    nextQuizBtn.textContent = 'Tiếp tục luyện tập';
+                    nextQuizBtn.classList.remove('hidden');
+                } else {
+                    // No more questions of this type to retry, move to next main question
+                    nextQuizBtn.textContent = 'Câu Tiếp Theo';
+                    if (currentQuizIndex < quizQuestions.length - 1) {
+                        nextQuizBtn.classList.remove('hidden');
+                    } else {
+                        resetQuizBtn.classList.remove('hidden');
+                    }
+                }
+            } else {
+                // If correct, or incorrect on a retry question, just prepare for next question
+                if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length - 1) {
+                    tempRetryIndex++;
+                    nextQuizBtn.textContent = 'Tiếp tục luyện tập';
+                    nextQuizBtn.classList.remove('hidden');
+                } else {
+                    // Retry queue exhausted or not in retry mode, move to next main question
+                    tempRetryQuestions = []; // Clear retry queue
+                    tempRetryIndex = 0;
+                    nextQuizBtn.textContent = 'Câu Tiếp Theo';
+                    if (currentQuizIndex < quizQuestions.length - 1) {
+                        nextQuizBtn.classList.remove('hidden');
+                    } else {
+                        resetQuizBtn.classList.remove('hidden');
+                    }
+                }
+            }
+
+            // Disable further clicks on options
+            Array.from(quizOptionsElem.children).forEach(optionDiv => {
+                optionDiv.removeEventListener('click', () => selectOption(optionDiv));
+                optionDiv.style.cursor = 'default';
+            });
+
+            updateNavigatorUI(); // Update navigator after checking answer
+        }
+
+        /**
+         * Moves to the next quiz question.
+         */
+        function nextQuestion() {
+            if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length) {
+                // If there are still questions in the retry queue, load the next one
+                loadQuizQuestion();
+            } else {
+                // If retry queue is exhausted, move to the next main quiz question
+                currentQuizIndex++;
+                loadQuizQuestion();
+            }
+        }
+
+        /**
+         * Displays the final score when all questions are completed.
+         */
+        function showFinalScore() {
+            quizQuestionElem.textContent = "Bạn đã hoàn thành bài kiểm tra ngữ pháp!";
+            quizOptionsElem.innerHTML = `<p class="text-xl text-blue-700 font-bold">Điểm cuối cùng của bạn: ${score} / ${quizQuestions.length}</p>`;
+            resultMessageElem.classList.add('hidden');
+            explanationTextElem.classList.add('hidden');
+            hintTextElem.classList.add('hidden'); // Hide hint
+            submitAnswerBtn.classList.add('hidden');
+            hintBtn.classList.add('hidden'); // Hide hint button
+            nextQuizBtn.classList.add('hidden');
+            resetQuizBtn.classList.remove('hidden');
+            exportResultsBtn.classList.remove('hidden'); // Ensure export button is visible at the end
+
+            // Set quizEndTime when quiz is completed
+            if (!quizEndTime) {
+                quizEndTime = Date.now();
+                saveQuizState(); // Save final state with end time
+            }
+            updateNavigatorUI(); // Final update to navigator
+        }
+
+        /**
+         * Resets the quiz to its initial state.
+         */
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            quizScoreElem.textContent = score;
+            tempRetryQuestions = [];
+            tempRetryIndex = 0;
+
+            // Reset all question states
+            quizQuestions.forEach(q => {
+                q.answered = false;
+                q.isCorrect = null;
+                q.userAnswer = null;
+                q.hintUsed = false; // Reset hintUsed state
+            });
+            
+            // Reset time and save
+            quizStartTime = Date.now();
+            quizEndTime = null;
+            saveQuizState();
+
+            loadQuizQuestion();
+            resultMessageElem.classList.add('hidden');
+            explanationTextElem.classList.add('hidden');
+            hintTextElem.classList.add('hidden'); // Hide hint
+            resetQuizBtn.classList.add('hidden');
+            updateNavigatorUI(); // Update navigator after reset
+        }
+
+        /**
+         * Displays the hint for the current question.
+         */
+        function showHint() {
+            let q;
+            if (tempRetryQuestions.length > 0 && tempRetryIndex < tempRetryQuestions.length) {
+                q = tempRetryQuestions[tempRetryIndex];
+            } else {
+                q = quizQuestions[currentQuizIndex];
+            }
+
+            if (q.hint && !q.answered) { // Only show hint if it exists and question not answered
+                hintTextElem.textContent = q.hint;
+                hintTextElem.classList.remove('hidden');
+                q.hintUsed = true; // Mark hint as used for this question
+                hintBtn.disabled = true; // Disable hint button after use
+                hintBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                saveQuizState(); // Save state after hint is used
+            } else if (!q.hint) {
+                showGeneralMessage('Không có gợi ý cho câu hỏi này.', 'info');
+            }
+        }
+
+        // --- Question Navigator Functionality ---
+        /**
+         * Renders all question buttons in the navigator.
+         */
+        function renderQuestionNavigator() {
+            questionNavigatorElem.innerHTML = ''; // Clear existing buttons
+            quizQuestions.forEach((q, index) => {
+                const navButton = document.createElement('button');
+                navButton.className = 'navigator-button';
+                navButton.textContent = index + 1;
+                navButton.dataset.index = index;
+                navButton.addEventListener('click', () => goToQuestion(index));
+                questionNavigatorElem.appendChild(navButton);
+            });
+            updateNavigatorUI(); // Initial update to highlight current question
+        }
+
+        /**
+         * Updates the visual state of the navigator buttons (active, answered correctly/incorrectly).
+         */
+        function updateNavigatorUI() {
+            Array.from(questionNavigatorElem.children).forEach((button, index) => {
+                button.classList.remove('active-question', 'answered-correctly', 'answered-incorrectly');
+
+                // Determine the question object for the current navigator button
+                const qForButton = quizQuestions[index];
+
+                // Highlight active question
+                if (tempRetryQuestions.length > 0) {
+                    // If in retry mode, highlight the original question that triggered the retry
+                    const originalQuestionIndex = quizQuestions.indexOf(tempRetryQuestions[tempRetryIndex]);
+                    if (index === originalQuestionIndex) {
+                        button.classList.add('active-question');
+                    }
+                } else if (index === currentQuizIndex) { // Only highlight main question if not in retry mode
+                    button.classList.add('active-question');
+                }
+
+
+                // Mark answered questions based on the state stored in quizQuestions
+                if (qForButton.answered) {
+                    if (qForButton.isCorrect) {
+                        button.classList.add('answered-correctly');
+                    } else {
+                        button.classList.add('answered-incorrectly');
+                    }
+                }
+            });
+        }
+
+        /**
+         * Navigates to a specific question.
+         * @param {number} index - The index of the question to navigate to.
+         */
+        function goToQuestion(index) {
+            currentQuizIndex = index;
+            tempRetryQuestions = []; // Clear any active retry queue when navigating manually
+            tempRetryIndex = 0;
+            loadQuizQuestion();
+        }
+
+        /**
+         * Exports the quiz results to a Word document.
+         */
+        function exportQuizResults() {
+            const totalQuestions = quizQuestions.length;
+            const correctAnswers = quizQuestions.filter(q => q.isCorrect === true).length;
+            const answeredQuestions = quizQuestions.filter(q => q.answered).length;
+
+            const currentExportTime = Date.now();
+            const start = new Date(quizStartTime);
+            const end = quizEndTime ? new Date(quizEndTime) : new Date(currentExportTime);
+            const durationMs = end.getTime() - start.getTime();
+
+            const hours = Math.floor(durationMs / (1000 * 60 * 60));
+            const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+
+            let durationString = '';
+            if (hours > 0) durationString += `${hours} giờ `;
+            if (minutes > 0) durationString += `${minutes} phút `;
+            durationString += `${seconds} giây`;
+            if (durationString.trim() === "") durationString = "0 giây"; // Handle very short durations
+
+            let htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Kết Quả Bài Tập Ngữ Pháp</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', serif;
+                            line-height: 1.6;
+                            margin: 1in;
+                            font-size: 12pt;
+                        }
+                        h1 {
+                            font-size: 24pt;
+                            text-align: center;
+                            margin-bottom: 0.5in;
+                            color: #1f497d;
+                        }
+                        h2 {
+                            font-size: 16pt;
+                            margin-top: 0.3in;
+                            margin-bottom: 0.1in;
+                            color: #366092;
+                        }
+                        p {
+                            margin-bottom: 0.1in;
+                        }
+                        ol {
+                            list-style: decimal;
+                            padding-left: 0.5in;
+                        }
+                        li {
+                            margin-bottom: 0.2in;
+                            font-size: 11pt;
+                        }
+                        .correct-answer {
+                            color: #008000; /* Green */
+                            font-weight: bold;
+                        }
+                        .incorrect-answer {
+                            color: #FF0000; /* Red */
+                            font-weight: bold;
+                        }
+                        .user-answer {
+                            font-style: italic;
+                        }
+                        .explanation {
+                            margin-top: 0.05in;
+                            font-size: 10pt;
+                            color: #555;
+                        }
+                        .hint-used {
+                            font-size: 10pt;
+                            color: #8B4513; /* SaddleBrown */
+                            font-style: italic;
+                        }
+                        .footer-text {
+                            margin-top: 1in;
+                            font-size: 9pt;
+                            text-align: center;
+                            color: #555;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Kết Quả Bài Tập Ngữ Pháp Tiếng Anh Nâng Cao</h1>
+                    <p><strong>Ngày làm bài:</strong> ${new Date(quizStartTime).toLocaleDateString('vi-VN')}</p>
+                    <p><strong>Thời gian bắt đầu:</strong> ${new Date(quizStartTime).toLocaleTimeString('vi-VN')}</p>
+                    <p><strong>Thời gian kết thúc:</strong> ${end.toLocaleTimeString('vi-VN')}</p>
+                    <p><strong>Tổng thời gian làm bài:</strong> ${durationString}</p>
+                    <p><strong>Điểm của bạn:</strong> ${correctAnswers} / ${totalQuestions} (${((correctAnswers / totalQuestions) * 100).toFixed(2)}%)</p>
+                    <p><strong>Số câu đã làm:</strong> ${answeredQuestions} / ${totalQuestions}</p>
+                    <h2>Chi tiết các câu hỏi đã làm:</h2>
+                    <ol>
+            `;
+
+            quizQuestions.forEach((q, index) => {
+                if (q.answered) {
+                    htmlContent += `<li>`;
+                    // Replace highlight placeholder with actual highlight in question text
+                    let questionTextFormatted = q.question.replace(q.highlight, `<span style="color:red; font-weight:bold;">${q.highlight}</span>`);
+                    htmlContent += `<p><strong>Câu ${index + 1}:</strong> ${questionTextFormatted}</p>`;
+                    htmlContent += `<p class="user-answer"><strong>Đáp án của bạn:</strong> ${q.userAnswer} <span class="${q.isCorrect ? 'correct-answer' : 'incorrect-answer'}">(${q.isCorrect ? 'Chính xác' : 'Sai'})</span></p>`;
+                    htmlContent += `<p><strong>Đáp án đúng:</strong> ${q.options.find(opt => opt.charAt(0) === q.answer)}</p>`;
+                    htmlContent += `<p class="explanation"><strong>Giải thích:</strong> ${q.explanation}</p>`;
+                    if (q.hintUsed && q.hint) {
+                        htmlContent += `<p class="hint-used"><strong>Gợi ý đã dùng:</strong> ${q.hint}</p>`;
+                    }
+                    htmlContent += `</li>`;
+                }
+            });
+
+            htmlContent += `
+                    </ol>
+                    <p class="footer-text">
+                        BẢN QUYỀN THUỘC VỀ TÁC GIẢ-NGHIÊM CẤM SỬ DỤNG VỚI MỤC ĐÍCH THƯƠNG MẠI<br>
+                        Tiếng Anh Tốt Tienganhtot.vn Lưu Hoằng Trí
+                    </p>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'application/msword' });
+
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blob, 'ket_qua_ngu_phap_nang_cao.doc');
+            } else {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'ket_qua_ngu_phap_nang_cao.doc';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            }
+            showGeneralMessage('Đang xuất file Word kết quả...', 'info');
+        }
+
+        // --- Note Functionality ---
+        const noteTextarea = document.getElementById('noteTextarea');
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        const exportNoteBtn = document.getElementById('exportNoteBtn');
+        const noteList = document.getElementById('noteList');
+        const generalMessageBox = document.getElementById('general-message-box');
+
+        /**
+         * Displays a temporary message to the user.
+         * @param {string} msg - The message to display.
+         * @param {string} type - The type of message ('info', 'warning', 'error').
+         */
+        function showGeneralMessage(msg, type = 'info') {
+            generalMessageBox.textContent = msg;
+            generalMessageBox.classList.remove('hidden', 'bg-red-100', 'bg-blue-100', 'bg-yellow-100', 'text-red-800', 'text-blue-800', 'text-yellow-800', 'border-red-400', 'border-blue-400', 'border-yellow-400');
+
+            if (type === 'error') {
+                generalMessageBox.classList.add('bg-red-100', 'text-red-800', 'border-red-400');
+            } else if (type === 'info') {
+                generalMessageBox.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-400');
+            } else if (type === 'warning') {
+                 generalMessageBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-400');
+            }
+            generalMessageBox.classList.remove('hidden');
+            setTimeout(() => {
+                generalMessageBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        /**
+         * Loads notes from local storage and displays them.
+         */
+        function loadNotes() {
+            noteList.innerHTML = '';
+            const notes = JSON.parse(localStorage.getItem('userAdvancedGrammarNotes_v2')) || [];
+            if (notes.length === 0) {
+                noteList.innerHTML = '<li class="text-gray-500 text-center py-4">Chưa có ghi chú nào được lưu.</li>';
+            }
+            notes.forEach((note, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'note-item';
+                listItem.innerHTML = `
+                    <span class="note-text-display">${note}</span>
+                    <button data-index="${index}" class="delete-note-btn" title="Xóa ghi chú">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                noteList.appendChild(listItem);
+            });
+            attachDeleteListeners();
+        }
+
+        saveNoteBtn.addEventListener('click', () => {
+            const note = noteTextarea.value.trim();
+            if (note) {
+                let notes = JSON.parse(localStorage.getItem('userAdvancedGrammarNotes_v2')) || [];
+                notes.push(note);
+                localStorage.setItem('userAdvancedGrammarNotes_v2', JSON.stringify(notes));
+                noteTextarea.value = '';
+                loadNotes();
+                showGeneralMessage('Ghi chú đã được lưu!', 'info');
+            } else {
+                showGeneralMessage('Vui lòng nhập ghi chú trước khi lưu!', 'warning');
+            }
+        });
+
+        exportNoteBtn.addEventListener('click', () => {
+            const notes = JSON.parse(localStorage.getItem('userAdvancedGrammarNotes_v2')) || [];
+
+            let htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Ghi Chú Ngữ Pháp Nâng Cao</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', serif;
+                            line-height: 1.6;
+                            margin: 1in;
+                            font-size: 12pt;
+                        }
+                        h1 {
+                            font-size: 24pt;
+                            text-align: center;
+                            margin-bottom: 0.5in;
+                            color: #1f497d;
+                        }
+                        p {
+                            margin-bottom: 0.1in;
+                        }
+                        ol {
+                            list-style: decimal;
+                            padding-left: 0.5in;
+                        }
+                        li {
+                            margin-bottom: 0.1in;
+                            font-size: 11pt;
+                        }
+                        .footer-text {
+                            margin-top: 1in;
+                            font-size: 9pt;
+                            text-align: center;
+                            color: #555;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Ghi Chú Ngữ Pháp Nâng Cao Của Tôi</h1>
+            `;
+
+            if (notes.length === 0) {
+                htmlContent += `<p style="text-align: center; color: #777;">Chưa có ghi chú nào được lưu.</p>`;
+            } else {
+                htmlContent += `<ol>`; // Use <ol> for ordered list
+                notes.forEach(note => {
+                    htmlContent += `<li>${note}</li>`;
+                });
+                htmlContent += `</ol>`;
+            }
+
+            htmlContent += `
+                    <p class="footer-text">
+                        BẢN QUYỀN THUỘC VỀ TÁC GIẢ-NGHIÊM CẤM SỬ DỤNG VỚI MỤC ĐÍCH THƯƠNG MẠI<br>
+                        Tiếng Anh Tốt Tienganhtot.vn Lưu Hoằng Trí
+                    </p>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'application/msword' });
+
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blob, 'ghi_chu_ngu_phap_nang_cao_v2.doc');
+            } else {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'ghi_chu_ngu_phap_nang_cao_v2.doc';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            }
+            showGeneralMessage('Đang xuất file Word...', 'info');
+        });
+
+        /**
+         * Attaches event listeners to delete buttons for notes.
+         */
+        function attachDeleteListeners() {
+            document.querySelectorAll('.delete-note-btn').forEach(button => {
+                button.onclick = (event) => {
+                    const indexToDelete = parseInt(event.currentTarget.dataset.index);
+                    let notes = JSON.parse(localStorage.getItem('userAdvancedGrammarNotes_v2')) || [];
+                    notes.splice(indexToDelete, 1);
+                    localStorage.setItem('userAdvancedGrammarNotes_v2', JSON.stringify(notes));
+                    loadNotes();
+                    showGeneralMessage('Ghi chú đã được xóa.', 'info');
+                };
+            });
+        }
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach quiz event listeners
+            submitAnswerBtn.addEventListener('click', checkAnswer);
+            hintBtn.addEventListener('click', showHint); // Attach hint button event listener
+            nextQuizBtn.addEventListener('click', nextQuestion);
+            resetQuizBtn.addEventListener('click', resetQuiz);
+            exportResultsBtn.addEventListener('click', exportQuizResults);
+
+            // Xử lý logic nút "Làm Lại Từ Đầu"
+            restartAllBtn.addEventListener('click', () => {
+                if (confirm('Bạn có chắc chắn muốn làm lại từ đầu? Toàn bộ kết quả hiện tại sẽ bị xóa.')) {
+                    resetQuiz();
+                    showGeneralMessage('Đã đặt lại quá trình làm bài.', 'info');
+                }
+            });
+
+            // Load quiz state first
+            loadQuizState();
+            // Then load the current question and render navigator based on the loaded state
+            loadQuizQuestion();
+            loadNotes();
+            renderQuestionNavigator();
+        });
+    </script>
+</body>
+</html>
