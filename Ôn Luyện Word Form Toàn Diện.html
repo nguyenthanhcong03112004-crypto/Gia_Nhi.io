@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học và Luyện Word Form Tiếng Anh Toàn Diện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+        /* Flashcard Styles */
+        .flashcard-container { perspective: 1000px; height: 350px; }
+        .flashcard {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 1rem; padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .flashcard-front { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+        .flashcard-back { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); transform: rotateY(180deg); }
+
+        /* Quiz Styles */
+        .quiz-option {
+            transition: all 0.2s;
+            border: 2px solid #e2e8f0;
+        }
+        .quiz-option:hover:not(.disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #f0f9ff; }
+        .quiz-option.selected { border-color: #3b82f6; background-color: #dbeafe; }
+        .quiz-option.correct { border-color: #10b981; background-color: #dcfce7; }
+        .quiz-option.incorrect { border-color: #ef4444; background-color: #fee2e2; }
+
+        .nav-dot {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 0.5rem; font-size: 0.75rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-dot.current { ring: 2px offset 2px #3b82f6; background-color: #3b82f6; color: white; }
+        .nav-dot.correct { background-color: #10b981; color: white; }
+        .nav-dot.incorrect { background-color: #ef4444; color: white; }
+        .nav-dot.unvisited { background-color: #e2e8f0; color: #64748b; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Toggle Sidebar Transition */
+        #quizNavigatorColumn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .collapsed-nav {
+            width: 0 !important;
+            opacity: 0;
+            margin-right: 0 !important;
+            overflow: hidden;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-full mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-black text-slate-800 mb-4 uppercase tracking-tight">
+                <span class="text-blue-600">Word Form</span> Master
+            </h1>
+            <p class="text-slate-600 text-lg">Học tập và ghi chú song song hiệu quả</p>
+            
+            <!-- Level Switcher -->
+            <div class="inline-flex p-1 bg-slate-200 rounded-xl mt-6">
+                <button onclick="switchLevel(1)" id="lvl1Btn" class="px-6 py-2 rounded-lg font-bold transition-all bg-white text-blue-600 shadow-sm">
+                    Cấp độ 1: Nhận diện (90 câu)
+                </button>
+                <button onclick="switchLevel(2)" id="lvl2Btn" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:text-blue-500">
+                    Cấp độ 2: Ứng dụng (100 câu)
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Navigation Tabs -->
+        <div class="flex justify-center gap-4 mb-8 sticky top-4 z-40">
+            <button onclick="showTab('theory')" id="theoryTab" class="tab-button active px-6 py-3 rounded-full font-bold bg-slate-200 text-slate-700 transition-all flex items-center gap-2">
+                <i class="fas fa-book-open"></i> Lý Thuyết
+            </button>
+            <button onclick="showTab('quiz')" id="quizTab" class="tab-button px-6 py-3 rounded-full font-bold bg-slate-200 text-slate-700 transition-all flex items-center gap-2">
+                <i class="fas fa-pencil-alt"></i> Luyện Tập & Ghi Chú
+            </button>
+        </div>
+
+        <main>
+            <!-- Theory Content -->
+            <div id="theorySection" class="tab-content block">
+                <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                        <i class="fas fa-lightbulb text-yellow-500"></i> Kiến thức trọng tâm
+                    </h2>
+                    <div class="flashcard-container mb-8">
+                        <div id="theoryFlashcard" class="flashcard" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-front text-xl font-bold text-blue-800 text-center"></div>
+                            <div class="flashcard-back text-slate-700"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-center gap-6">
+                        <button onclick="prevTheory()" class="p-4 bg-slate-100 rounded-full hover:bg-blue-100 text-blue-600 transition-all">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="theoryProgress" class="font-bold text-slate-500 text-sm">Trang 1 / 10</span>
+                        <button onclick="nextTheory()" class="p-4 bg-slate-100 rounded-full hover:bg-blue-100 text-blue-600 transition-all">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz & Notes Content Combined (3 Parallel Columns) -->
+            <div id="quizSection" class="tab-content hidden relative">
+                
+                <!-- Floating Toggle Button for Navigator -->
+                <button onclick="toggleNavigator()" class="fixed bottom-6 left-6 z-50 bg-slate-800 text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:bg-blue-600 transition-all group">
+                    <i id="toggleIcon" class="fas fa-list-ol"></i>
+                    <span class="absolute left-14 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Danh sách câu</span>
+                </button>
+
+                <div class="flex flex-col lg:flex-row gap-6 items-start">
+                    
+                    <!-- Left: Navigator (Toggleable Column) -->
+                    <div id="quizNavigatorColumn" class="w-full lg:w-64 flex-shrink-0">
+                        <div class="bg-white rounded-2xl shadow-lg p-5 border border-slate-100 sticky top-24">
+                            <h3 class="font-bold text-slate-800 mb-4 border-b pb-2 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><i class="fas fa-th"></i> Tiến trình</span>
+                                <button onclick="toggleNavigator()" class="lg:hidden text-slate-400"><i class="fas fa-times"></i></button>
+                            </h3>
+                            <div id="quizNavigator" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-4 gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                <!-- Dots generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center: Question Card -->
+                    <div id="quizMainColumn" class="flex-grow w-full">
+                        <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100 min-h-[600px] flex flex-col">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center gap-3">
+                                    <span id="levelBadge" class="px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">Cấp độ 1</span>
+                                    <span id="questionCountBadge" class="text-xs font-bold text-slate-400">Câu <span id="currentIdxText">1</span> / 90</span>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-slate-400 font-medium">Điểm số</p>
+                                    <p class="text-2xl font-black text-blue-600" id="currentScore">0.0 / 10</p>
+                                </div>
+                            </div>
+
+                            <div id="questionContainer" class="flex-grow">
+                                <h3 class="text-xl font-bold text-slate-800 mb-6 leading-relaxed" id="questionText">Câu hỏi đang tải...</h3>
+                                <div id="optionsContainer" class="space-y-3">
+                                    <!-- Options generated by JS -->
+                                </div>
+                            </div>
+
+                            <div id="feedbackArea" class="mt-6 p-4 rounded-xl hidden">
+                                <p id="feedbackMessage" class="font-bold mb-1"></p>
+                                <p id="explanationText" class="text-slate-600 text-sm italic"></p>
+                            </div>
+
+                            <div class="flex justify-between items-center mt-8 pt-6 border-t">
+                                <button onclick="resetCurrentQuiz()" class="text-red-400 text-xs font-bold hover:text-red-600 transition-colors uppercase tracking-widest">Làm lại cấp độ</button>
+                                <div class="flex gap-3">
+                                    <button id="checkBtn" onclick="checkAnswer()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-2.5 rounded-xl font-bold transition-all shadow-md">Kiểm Tra</button>
+                                    <button id="nextBtn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold transition-all shadow-md hidden">Tiếp Theo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Notes Section -->
+                    <div id="notesColumn" class="w-full lg:w-80 xl:w-96 flex-shrink-0">
+                        <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100 flex flex-col h-full min-h-[600px] sticky top-24">
+                            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-edit text-blue-500"></i> Sổ tay ghi chú
+                            </h2>
+                            <textarea id="noteInput" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all mb-4 h-40 resize-none text-sm" placeholder="Ghi lại cấu trúc hoặc lưu ý cho câu hỏi này..."></textarea>
+                            <div class="flex gap-3 mb-6">
+                                <button onclick="saveNote()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 text-sm shadow-sm">
+                                    <i class="fas fa-save"></i> Lưu
+                                </button>
+                                <button onclick="exportNotes()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 text-sm shadow-sm">
+                                    <i class="fas fa-file-word"></i> Xuất
+                                </button>
+                            </div>
+                            
+                            <div class="flex-grow flex flex-col">
+                                <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center justify-between border-b pb-2 uppercase tracking-widest text-slate-400">
+                                    <span>Đã lưu</span>
+                                    <button onclick="clearAllNotes()" class="text-[10px] text-red-400 hover:text-red-600 font-bold">Xóa hết</button>
+                                </h3>
+                                <div id="savedNotesList" class="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar flex-grow">
+                                    <!-- Notes list generated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-16 pt-8 border-t text-center text-slate-400 text-sm">
+            <p class="mb-2 uppercase font-bold tracking-widest text-[10px]">BẢN QUYỀN THUỘC VỀ TÁC GIẢ-NGHIÊM CẤM SỬ DỤNG VỚI MỤC ĐÍCH THƯƠNG MẠI</p>
+            <p>Tiếng Anh Tốt Tienganhtot.vn Lưu Hoằng Trí</p>
+        </footer>
+    </div>
+
+    <!-- Toast message -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-medium shadow-2xl transition-all opacity-0 translate-y-10 pointer-events-none z-[100]"></div>
+
+    <script>
+        // --- DATA SECTION ---
+        const theoryData = [
+            { front: "Word Form là gì?", back: "Word Form (biến đổi từ loại) là quá trình thay đổi dạng của một từ (ví dụ: từ động từ sang danh từ, hoặc từ danh từ sang tính từ) để phù hợp với ngữ pháp và ý nghĩa trong câu." },
+            { front: "Danh từ (Nouns - N)", back: "Hậu tố phổ biến: -tion, -sion, -ment, -ness, -ity, -ty, -ance, -ence, -er, -or, -ist, -ship, -dom.\nVị trí: Sau mạo từ, Sau tính từ sở hữu, Sau tính từ, Sau giới từ." },
+            { front: "Tính từ (Adjectives - Adj)", back: "Hậu tố phổ biến: -ful, -less, -able, -ible, -al, -ic, -ical, -ive, -ous, -y, V-ing, V-ed.\nVị trí: Trước danh từ, Sau động từ to be, Sau linking verbs." },
+            { front: "Trạng từ (Adverbs - Adv)", back: "Thường kết thúc bằng -ly (Tính từ + ly).\nVị trí: Sau động từ thường, Trước tính từ, Đầu hoặc cuối câu." }
+        ];
+
+        const quizLevels = {
+            1: [
+                { question: "1. Từ 'government' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'government' có hậu tố '-ment' là một danh từ." },
+                { question: "2. Từ 'unhappy' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'unhappy' là một tính từ (tiền tố 'un-' và gốc 'happy' là tính từ)." },
+                { question: "3. Từ 'readable' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'readable' có hậu tố '-able' là một tính từ." },
+                { question: "4. Từ 'dependence' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'dependence' có hậu tố '-ence' là một danh từ." },
+                { question: "5. Từ 'dangerous' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'dangerous' có hậu tố '-ous' là một tính từ." },
+                { question: "6. Từ 'childish' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'childish' có hậu tố '-ish' là một tính từ." },
+                { question: "7. Từ 'beautiful' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'beautiful' có hậu tố '-ful' là một tính từ." },
+                { question: "8. Từ 'national' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'national' có hậu tố '-al' là một tính từ." },
+                { question: "9. Từ 'employee' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'employee' có hậu tố '-ee' là một danh từ chỉ người." },
+                { question: "10. Từ 'development' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'development' có hậu tố '-ment' là một danh từ." },
+                { question: "11. Từ 'inactive' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'inactive' là một tính từ (tiền tố 'in-' và gốc 'active' là tính từ)." },
+                { question: "12. Từ 'valuable' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'valuable' có hậu tố '-able' là một tính từ." },
+                { question: "13. Từ 'information' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'information' có hậu tố '-tion' là một danh từ." },
+                { question: "14. Từ 'protection' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'protection' có hậu tố '-tion' là một danh từ." },
+                { question: "15. Từ 'educational' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'educational' có hậu tố '-al' là một tính từ." },
+                { question: "16. Từ 'organization' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'organization' có hậu tố '-ization' là một danh từ." },
+                { question: "17. Từ 'creation' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'creation' có hậu tố '-tion' là một danh từ." },
+                { question: "18. Từ 'magical' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'magical' có hậu tố '-al' là một tính từ." },
+                { question: "19. Từ 'communication' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'communication' có hậu tố '-tion' là một danh từ." },
+                { question: "20. Từ 'reasonable' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'reasonable' có hậu tố '-able' là một tính từ." },
+                { question: "21. Từ 'darkness' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'darkness' có hậu tố '-ness' là một danh từ." },
+                { question: "22. Từ 'sensible' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'sensible' có hậu tố '-ible' là một tính từ." },
+                { question: "23. Từ 'improvement' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'improvement' có hậu tố '-ment' là một danh từ." },
+                { question: "24. Từ 'courageous' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'courageous' có hậu tố '-ous' là một tính từ." },
+                { question: "25. Từ 'generosity' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'generosity' có hậu tố '-ity' là một danh từ." },
+                { question: "26. Từ 'critical' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'critical' có hậu tố '-ical' là một tính từ." },
+                { question: "27. Từ 'reality' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'reality' có hậu tố '-ity' là một danh từ." },
+                { question: "28. Từ 'powerful' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'powerful' có hậu tố '-ful' là một tính từ." },
+                { question: "29. Từ 'solution' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'solution' có hậu tố '-tion' là một danh từ." },
+                { question: "30. Từ 'careful' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'careful' có hậu tố '-ful' là một tính từ." },
+                { question: "31. Từ 'collection' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'collection' có hậu tố '-tion' là một danh từ." },
+                { question: "32. Từ 'imaginative' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'imaginative' có hậu tố '-ive' là một tính từ." },
+                { question: "33. Từ 'friendship' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'friendship' có hậu tố '-ship' là một danh từ." },
+                { question: "34. Từ 'acceptable' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'acceptable' có hậu tố '-able' là một tính từ." },
+                { question: "35. Từ 'comfort' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'comfort' là một danh từ." },
+                { question: "36. Từ 'effective' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'effective' có hậu tố '-ive' là một tính từ." },
+                { question: "37. Từ 'difference' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'difference' có hậu tố '-ence' là một danh từ." },
+                { question: "38. Từ 'economic' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'economic' có hậu tố '-ic' là một tính từ." },
+                { question: "39. Từ 'assistance' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "A", explanation: "Từ 'assistance' có hậu tố '-ance' là một danh từ." },
+                { question: "40. Từ 'famous' thuộc loại từ gì?", options: ["A. Danh từ", "B. Tính từ", "C. Động từ", "D. Trạng từ"], answer: "B", explanation: "Từ 'famous' có hậu tố '-ous' là một tính từ." },
+                { question: "41. 'The air in the city is very-----------------------.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Vị trí sau 'is very' cần một tính từ. Từ phù hợp là 'polluted'." },
+                { question: "42. 'keep the environment-----------------------?' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần một tính từ để miêu tả trạng thái môi trường. Từ phù hợp là 'unpolluted'." },
+                { question: "43. 'Please listen to the lecture-----------------------.' (care)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho động từ 'listen' cần trạng từ 'carefully'." },
+                { question: "44. 'be fined-----------------------.' (heavy)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho động từ 'fined' cần trạng từ 'heavily'." },
+                { question: "45. 'She felt-----------------------because of her result.' (happy)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Sau 'felt' cần tính từ 'unhappy'." },
+                { question: "46. 'She has-----------------------provided a picnic lunch.' (kind)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'provided' cần trạng từ 'kindly'." },
+                { question: "47. 'My uncle teaches the-----------------------sciences.' (nature)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Bổ nghĩa cho 'sciences' cần tính từ 'natural'." },
+                { question: "48. 'I'm very-----------------------because of electricity fishing.' (worry)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Sau 'I'm very' cần tính từ 'worried'." },
+                { question: "49. 'Gasoline fumes-----------------------the air.' (pollution)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "B", explanation: "Vị trí làm vị ngữ cần động từ 'pollute'." },
+                { question: "50. 'To my great-----------------------' (disappoint)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Sau 'great' cần danh từ 'disappointment'." },
+                { question: "51. 'looked-----------------------at me' (angry)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'looked' cần trạng từ 'angrily'." },
+                { question: "52. 'preservation of-----------------------resources.' (nature)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'natural' cho 'resources'." },
+                { question: "53. 'cause air-----------------------.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Tân ngữ cần danh từ 'pollution'." },
+                { question: "54. 'make the air and water-----------------------.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'polluted' sau động từ 'make'." },
+                { question: "55. 'the----------------------of the rain forests.' (destroy)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'destruction'." },
+                { question: "56. 'the----------------------of the environment.' (conserve)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'conservation'." },
+                { question: "57. 'make beach clean and----------------------again.' (beauty)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Song song với 'clean' cần tính từ 'beautiful'." },
+                { question: "58. 'Be----------------------!' (care)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Sau 'Be' cần tính từ 'careful'." },
+                { question: "59. '----------------------, these innovations will...' (ultimate)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Đầu câu bổ nghĩa cho cả câu cần trạng từ 'Ultimately'." },
+                { question: "60. 'end the letter----------------------' (polite)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Cần trạng từ 'politely' bổ nghĩa cho 'end'." },
+                { question: "61. 'spoke English more----------------------' (fluent)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'spoke' cần trạng từ 'fluently'." },
+                { question: "62. 'takes----------------------in her daughter.' (proud)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cụm 'take pride in' cần danh từ 'pride'." },
+                { question: "63. 'one of the most famous----------------------' (environment)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ chỉ người 'environmentalists'." },
+                { question: "64. 'become----------------------polluted.' (serious)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'polluted' cần trạng từ 'seriously'." },
+                { question: "65. 'laughed----------------------' (happy)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'laughed' cần trạng từ 'happily'." },
+                { question: "66. '----------------------air can cause illness.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'polluted' cho 'air'." },
+                { question: "67. 'made----------------------on how to protect.' (suggest)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Sau 'made' cần danh từ 'suggestions'." },
+                { question: "68. 'mother was----------------------worried.' (extreme)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'worried' cần trạng từ 'extremely'." },
+                { question: "69. 'If the----------------------continues...' (forest)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'deforestation'." },
+                { question: "70. 'keep environment----------------------' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'unpolluted'." },
+                { question: "71. 'to keep the environment----------------------.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'unpolluted'." },
+                { question: "72. 'It's----------------------that Lucia passed.' (surprise)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'surprising'." },
+                { question: "73. 'enjoy the----------------------of this lake.' (beautiful)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'beauty'." },
+                { question: "74. 'natural----------------------.' (source)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cụm 'natural resources' cần danh từ." },
+                { question: "75. 'If the----------------------continues' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'pollution'." },
+                { question: "76. 'driving----------------------.' (care)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'driving' cần trạng từ 'carelessly'." },
+                { question: "77. 'was----------------------by fire.' (destruction)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "B", explanation: "Bị động cần V3 'destroyed'." },
+                { question: "78. '----------------------pollution.' (environment)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'environmental'." },
+                { question: "79. 'felt----------------------that people spoiled.' (disappoint)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'disappointed' miêu tả cảm xúc người." },
+                { question: "80. 'see the----------------------of environment.' (protect)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'protection'." },
+                { question: "81. 'is----------------------by the sun.' (provision)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "B", explanation: "Bị động cần V3 'provided'." },
+                { question: "82. 'to----------------------energy?' (conservation)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "B", explanation: "Sau 'to' cần động từ nguyên mẫu 'conserve'." },
+                { question: "83. 'can be----------------------.' (extend)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "B", explanation: "Sau 'can be' cần V3 'extended'." },
+                { question: "84. 'use energy more----------------------!' (efficient)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'use' cần trạng từ 'efficiently'." },
+                { question: "85. 'was----------------------pleased.' (extreme)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Bổ nghĩa cho 'pleased' cần trạng từ 'extremely'." },
+                { question: "86. 'one of the best----------------------' (environment)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'environmentalists'." },
+                { question: "87. 'reducing air----------------------.' (pollute)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "A", explanation: "Cần danh từ 'pollution'." },
+                { question: "88. 'makes his parents----------------------.' (disappoint)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Cần tính từ 'disappointed'." },
+                { question: "89. 'more----------------------than Lan.' (fluent)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "D", explanation: "Cần trạng từ 'fluently'." },
+                { question: "90. 'I'm very----------------------of my father.' (proud)", options: ["A. Danh từ", "B. Động từ", "C. Tính từ", "D. Trạng từ"], answer: "C", explanation: "Sau 'I'm very' cần tính từ 'proud'." }
+            ],
+            2: [
+                { question: "101. I think all nations should live _______________ and take care of our planet. (peace)", options: ["A. peaceful", "B. peacefully", "C. peace", "D. peacemaker"], answer: "B", explanation: "Đáp án B. 'peacefully' là trạng từ, bổ nghĩa cho động từ 'live'." },
+                { question: "102. We are _______________ to hear that bad news. (happy)", options: ["A. happy", "B. unhappily", "C. unhappy", "D. happiness"], answer: "C", explanation: "Đáp án C. 'unhappy' là tính từ, phù hợp sau 'are' để mô tả cảm xúc." },
+                { question: "103. The Temple of Literature was _______________ built in 1070 in The Ly Dynasty (origin)", options: ["A. original", "B. originally", "C. origin", "D. originate"], answer: "B", explanation: "Đáp án B. 'originally' là trạng từ, bổ nghĩa cho động từ 'built'." },
+                { question: "104. Tom was _______________ in finding his lost bicycle, so he decided to buy a new one. (succeed)", options: ["A. successful", "B. successfully", "C. unsuccessful", "D. succession"], answer: "C", explanation: "Đáp án C. 'unsuccessful' là tính từ, phù hợp sau 'was' để mô tả Tom." },
+                { question: "105. It would be more _______________ to turn off the air-conditioner before leaving. (economy)", options: ["A. economical", "B. economically", "C. economic", "D. economize"], answer: "A", explanation: "Đáp án A. 'economical' là tính từ, bổ nghĩa cho 'it' và cụm 'turn off the air-conditioner'." },
+                { question: "106. Buckingham Palace is a major tourist _______________. (attract)", options: ["A. attractive", "B. attraction", "C. attracted", "D. attracting"], answer: "B", explanation: "Đáp án B. 'attraction' là danh từ, chỉ điểm thu hút." },
+                { question: "107. It was a beautiful piece of _______________. (embroider)", options: ["A. embroidered", "B. embroidering", "C. embroidery", "D. embroiderer"], answer: "C", explanation: "Đáp án C. 'embroidery' là danh từ, chỉ sự thêu thùa/một tác phẩm thêu." },
+                { question: "108. The two sides of the city are _______________ by the river. (separation)", options: ["A. separate", "B. separated", "C. separating", "D. separation"], answer: "B", explanation: "Đáp án B. 'separated' là tính từ (phân từ quá khứ), thể hiện trạng thái bị tách ra." },
+                { question: "109. This examination will test your _______________ in English. (proficient)", options: ["A. proficient", "B. proficiently", "C. proficiency", "D. professor"], answer: "C", explanation: "Đáp án C. 'proficiency' là danh từ, chỉ sự thành thạo." },
+                { question: "110. I'm going to apply for a _______________ to attend an English language summer course abroad. (school)", options: ["A. scholar", "B. scholarly", "C. scholarship", "D. schooling"], answer: "C", explanation: "Đáp án C. 'scholarship' là danh từ, chỉ học bổng." },
+                { question: "111. You are very _______________. You should be an artist! (create)", options: ["A. creative", "B. creatively", "C. creation", "D. creator"], answer: "A", explanation: "Đáp án A. 'creative' là tính từ, bổ nghĩa cho 'You'." },
+                { question: "112. I don't like these flowers they look _______________. (nature)", options: ["A. natural", "B. naturally", "C. unnatural", "D. nature"], answer: "C", explanation: "Đáp án C. 'unnatural' là tính từ, phù hợp sau 'look' để mô tả vẻ ngoài." },
+                { question: "113. He does not agree with the _______________ that there is life on other planets. (believe)", options: ["A. believable", "B. belief", "C. believing", "D. believes"], answer: "B", explanation: "Đáp án B. 'belief' là danh từ, chỉ niềm tin." },
+                { question: "114. I think these poems should be _______________. (memory)", options: ["A. memorized", "B. memorable", "C. memorizing", "D. memory"], answer: "A", explanation: "Đáp án A. 'memorized' là tính từ (phân từ quá khứ), thể hiện trạng thái được ghi nhớ." },
+                { question: "115. Several hundred people demonstrated _______________ outside the Embassy last Sunday. (peace)", options: ["A. peaceful", "B. peacefully", "C. peace", "D. peaceless"], answer: "B", explanation: "Đáp án B. 'peacefully' là trạng từ, bổ nghĩa cho động từ 'demonstrated'." },
+                { question: "116. Living in a big city is _______________ because there is too much pollution (health)", options: ["A. healthy", "B. healthily", "C. unhealthy", "D. health"], answer: "C", explanation: "Đáp án C. 'unhealthy' là tính từ, phù hợp sau 'is' để mô tả lối sống." },
+                { question: "117. Like paper, many other _______________ can be recycled. (produce)", options: ["A. products", "B. production", "C. productive", "D. producer"], answer: "A", explanation: "Đáp án A. 'products' là danh từ số nhiều, chỉ các sản phẩm." },
+                { question: "118. The use of light and dark _______________ good and evil. (symbol)", options: ["A. symbolize", "B. symbolic", "C. symbolically", "D. symbolism"], answer: "A", explanation: "Đáp án A. 'symbolize' là động từ, phù hợp sau chủ ngữ 'The use...'" },
+                { question: "119. He felt a great _______________ to tell her everything, (compel)", options: ["A. compelled", "B. compelling", "C. compulsion", "D. compulsively"], answer: "C", explanation: "Đáp án C. 'compulsion' là danh từ, chỉ sự thôi thúc/sức ép." },
+                { question: "120. Many chemicals have _______________ affected the environment. (disaster)", options: ["A. disastrous", "B. disastrously", "C. disaster", "D. disasters"], answer: "B", explanation: "Đáp án B. 'disastrously' là trạng từ, bổ nghĩa cho động từ 'affected'." },
+                { question: "121. Why don't we have a computer _______________ in the lab room? (install)", options: ["A. installed", "B. installing", "C. installation", "D. installer"], answer: "A", explanation: "Đáp án A. 'installed' là phân từ quá khứ (dạng bị động), theo sau 'have a computer'." },
+                { question: "122. She travels to different parts of the world as part of her job in that _______________ company (nation)", options: ["A. national", "B. nationally", "C. international", "D. nation"], answer: "C", explanation: "Đáp án C. 'international' là tính từ, bổ nghĩa cho 'company' (công ty quốc tế)." },
+                { question: "123. Lots of _______________ activities have recently been held in our city. (culture)", options: ["A. cultural", "B. culturally", "C. culture", "D. cultured"], answer: "A", explanation: "Đáp án A. 'cultural' là tính từ, bổ nghĩa cho 'activities'." },
+                { question: "124. It was such _______________ news that they all sat there saying nothing, (worry)", options: ["A. worried", "B. worrying", "C. worry", "D. worries"], answer: "B", explanation: "Đáp án B. 'worrying' là tính từ (dạng V-ing), mô tả tin tức (gây lo lắng)." },
+                { question: "125. Bahasa Malaysia is known _______________ as Malay (simple)", options: ["A. simple", "B. simply", "C. simpler", "D. simplest"], answer: "B", explanation: "Đáp án B. 'simply' là trạng từ, bổ nghĩa cho động từ 'known'." },
+                { question: "126. What _______________ did you take part in at school? (act)", options: ["A. active", "B. action", "C. activities", "D. actively"], answer: "C", explanation: "Đáp án C. 'activities' là danh từ số nhiều, phù hợp sau 'What' để hỏi về các hoạt động." },
+                { question: "127. She was surprised to find her name on the list of _______________. (nominate)", options: ["A. nominee", "B. nominees", "C. nomination", "D. nominated"], answer: "B", explanation: "Đáp án B. 'nominees' là danh từ số nhiều, chỉ những người được đề cử." },
+                { question: "128. Traditional _______________ are a good source of fun and entertainment (celebrate)", options: ["A. celebrated", "B. celebration", "C. celebrations", "D. celebratory"], answer: "C", explanation: "Đáp án C. 'celebrations' là danh từ số nhiều, chỉ các lễ kỷ niệm/sự kiện ăn mừng." },
+                { question: "129. You shouldn't read that kind of newspaper. It's _______________. (inform)", options: ["A. informative", "B. uninformative", "C. information", "D. informed"], answer: "B", explanation: "Đáp án B. 'uninformative' là tính từ, mô tả tờ báo (không cung cấp thông tin/thiếu thông tin)." },
+                { question: "130. The eruption of Mount Pinatubo is the world's _______________ volcanic eruption. (large)", options: ["A. larger", "B. largely", "C. largest", "D. enlarge"], answer: "C", explanation: "Đáp án C. 'largest' là tính từ (dạng so sánh nhất), phù hợp sau 'the world's'." },
+                { question: "131. The consumers want products that will work _______________ and save money. (effect)", options: ["A. effective", "B. effectively", "C. effectiveness", "D. effect"], answer: "B", explanation: "Đáp án B. 'effectively' là trạng từ, bổ nghĩa cho động từ 'work'." },
+                { question: "132. Mai invited her pen pal to Hanoi last year. (invitation)", options: ["A. invited", "B. invite", "C. invitation", "D. inviting"], answer: "A", explanation: "Đáp án A. 'invited' là động từ (quá khứ đơn), phù hợp với ngữ cảnh." },
+                { question: "133. Please accept my warmest _______________ on your engagement (congratulate)", options: ["A. congratulation", "B. congratulated", "C. congratulating", "D. congratulations"], answer: "D", explanation: "Đáp án D. 'congratulations' là danh từ số nhiều, chỉ lời chúc mừng." },
+                { question: "134. He appeared _______________ and confident before the match, (relax)", options: ["A. relaxing", "B. relaxed", "C. relaxation", "D. relaxingly"], answer: "B", explanation: "Đáp án B. 'relaxed' là tính từ (phân từ quá khứ), mô tả cảm xúc của người (thư giãn, thoải mái)." },
+                { question: "135. London has always been a center of _______________. (cultural)", options: ["A. culture", "B. culturally", "C. cultured", "D. cultures"], answer: "A", explanation: "Đáp án A. 'culture' là danh từ, tạo thành cụm 'center of culture' (trung tâm văn hóa)." },
+                { question: "136. I think you _______________ very badly towards your father yesterday. (behave)", options: ["A. behaved", "B. behavior", "C. behavioral", "D. behaving"], answer: "A", explanation: "Đáp án A. 'behaved' là động từ (quá khứ đơn), phù hợp với ngữ cảnh." },
+                { question: "137. The hotel is _______________ situated on the edge of the lake (delightful)", options: ["A. delight", "B. delightful", "C. delightfully", "D. delighted"], answer: "C", explanation: "Đáp án C. 'delightfully' là trạng từ, bổ nghĩa cho tính từ 'situated'." },
+                { question: "138. The remote desert area is _______________ only by helicopter. (access)", options: ["A. accessible", "B. accessibly", "C. access", "D. inaccessible"], answer: "A", explanation: "Đáp án A. 'accessible' là tính từ, phù hợp sau 'is' để mô tả khu vực." },
+                { question: "139. Some young people today have a very strange _______________. (appear)", options: ["A. appeared", "B. appearing", "C. appearance", "D. appearances"], answer: "C", explanation: "Đáp án C. 'appearance' là danh từ, chỉ dáng vẻ/ngoại hình." },
+                { question: "140. Walking on the grass is heavily _______________ in this university. (fine)", options: ["A. fine", "B. fined", "C. fining", "D. fineness"], answer: "B", explanation: "Đáp án B. 'fined' là phân từ quá khứ (dạng bị động), thể hiện trạng thái bị phạt." },
+                { question: "141. She is one of the most active _______________ of the campaign. (preserve)", options: ["A. preserved", "B. preservation", "C. preservationists", "D. preserving"], answer: "C", explanation: "Đáp án C. 'preservationists' là danh từ số nhiều, chỉ những người hoạt động bảo tồn." },
+                { question: "142. Your daughter always plays the piano _______________. (amaze)", options: ["A. amazed", "B. amazing", "C. amazingly", "D. amazement"], answer: "C", explanation: "Đáp án C. 'amazingly' là trạng từ, bổ nghĩa cho động từ 'plays'." },
+                { question: "143. What should we do to stop these _______________ actions? (pollute)", options: ["A. polluted", "B. polluting", "C. pollution", "D. pollutant"], answer: "B", explanation: "Đáp án B. 'polluting' là tính từ (dạng V-ing), bổ nghĩa cho 'actions' (các hành động gây ô nhiễm)." },
+                { question: "144. If Tom keeps acting _______________ everyone will stay away from him. (polite)", options: ["A. polite", "B. politely", "C. impolite", "D. impolitely"], answer: "D", explanation: "Đáp án D. 'impolitely' là trạng từ, bổ nghĩa cho động từ 'acting'." },
+                { question: "145. The company needs to reduce its _______________ on just one particular product. (depend)", options: ["A. dependent", "B. dependence", "C. dependently", "D. dependable"], answer: "B", explanation: "Đáp án B. 'dependence' là danh từ, chỉ sự phụ thuộc." },
+                { question: "146. New York is a _______________ city. It has people from all over the world living in it. (multi-culture)", options: ["A. multi-cultural", "B. multi-culturally", "C. multi-culture", "D. multi-cultures"], answer: "A", explanation: "Đáp án A. 'multi-cultural' là tính từ, bổ nghĩa cho 'city'." },
+                { question: "147. Doctors have just found out a new _______________ for cancer treat).", options: ["A. treatable", "B. treatment", "C. treating", "D. treatise"], answer: "B", explanation: "Đáp án B. 'treatment' là danh từ, chỉ phương pháp điều trị." },
+                { question: "148. She has _______________ passed the final exam. (impress)", options: ["A. impressed", "B. impressive", "C. impressively", "D. impression"], answer: "C", explanation: "Đáp án C. 'impressively' là trạng từ, bổ nghĩa cho động từ 'passed'." },
+                { question: "149. She is extremely _______________ about the history of art. (knowledge)", options: ["A. knowing", "B. knowledgeable", "C. knowledgeably", "D. knowledge"], answer: "B", explanation: "Đáp án B. 'knowledgeable' là tính từ, mô tả người (có kiến thức)." },
+                { question: "150. My grandparents prefer the _______________ of country living, (simple)", options: ["A. simple", "B. simply", "C. simplicity", "D. simplification"], answer: "C", explanation: "Đáp án C. 'simplicity' là danh từ, chỉ sự đơn giản." },
+                { question: "151. Her scars are hardly _______________ now. (notice)", options: ["A. noticeable", "B. noticeably", "C. notice", "D. noticing"], answer: "A", explanation: "Đáp án A. 'noticeable' là tính từ, phù hợp sau 'hardly' để mô tả vết sẹo." },
+                { question: "152. It is becoming _______________ clear that this problem will not be easily solved. (increase)", options: ["A. increased", "B. increasing", "C. increasingly", "D. increase"], answer: "C", explanation: "Đáp án C. 'increasingly' là trạng từ, bổ nghĩa cho tính từ 'clear'." },
+                { question: "153. Many people believe that well-p jobs are _______________ in the city. (plenty)", options: ["A. plenty", "B. plentiful", "C. plentifully", "D. plenitude"], answer: "B", explanation: "Đáp án B. 'plentiful' là tính từ, phù hợp sau 'are' để mô tả công việc." },
+                { question: "154. What first _______________ me to her was her sense of humor. (attract)", options: ["A. attracted", "B. attractive", "C. attraction", "D. attracting"], answer: "A", explanation: "Đáp án A. 'attracted' là động từ (quá khứ đơn), phù hợp với cấu trúc 'What first...'" },
+                { question: "155. Some of my _______________ are living in the countryside now. (relate)", options: ["A. relative", "B. relatives", "C. relation", "D. related"], answer: "B", explanation: "Đáp án B. 'relatives' là danh từ số nhiều, chỉ người thân." },
+                { question: "156. A school or college for special training is an _______________. (academic)", options: ["A. academy", "B. academician", "C. academically", "D. academical"], answer: "A", explanation: "Đáp án A. 'academy' là danh từ, chỉ học viện/trường chuyên biệt." },
+                { question: "157. I am afraid I have no _______________ but to ask you to leave. (alter)", options: ["A. alteration", "B. alternative", "C. alterable", "D. alternately"], answer: "B", explanation: "Đáp án B. 'alternative' là danh từ, chỉ sự lựa chọn khác." },
+                { question: "158. He received the award in _______________ of his success over the past year. (recognize)", options: ["A. recognized", "B. recognizing", "C. recognition", "D. recognizable"], answer: "C", explanation: "Đáp án C. 'recognition' là danh từ, trong cụm 'in recognition of' (để công nhận)." },
+                { question: "159. Jan speaks French with a great _______________. (fluent)", options: ["A. fluently", "B. fluent", "C. fluency", "D. influencing"], answer: "C", explanation: "Đáp án C. 'fluency' là danh từ, chỉ sự trôi chảy." },
+                { question: "160. Though he is a manager of the company, his _______________ makes people comfortable. (simple)", options: ["A. simple", "B. simply", "C. simplicity", "D. simplify"], answer: "C", explanation: "Đáp án C. 'simplicity' là danh từ, chỉ sự đơn giản." },
+                { question: "161. He _______________ his paintings in local art galleries regularly. (exhibition)", options: ["A. exhibit", "B. exhibited", "C. exhibiting", "D. exhibitionist"], answer: "A", explanation: "Đáp án A. 'exhibit' là động từ, phù hợp với thì hiện tại đơn ('regularly')." },
+                { question: "162. These fish _______________ in weight from 3 pounds to 5 pounds. (variety)", options: ["A. varied", "B. various", "C. vary", "D. variation"], answer: "C", explanation: "Đáp án C. 'vary' là động từ, chỉ sự biến đổi/khác nhau." },
+                { question: "163. She smiled _______________ in front of the camera, (confident)", options: ["A. confident", "B. confidently", "C. confidence", "D. confiding"], answer: "B", explanation: "Đáp án B. 'confidently' là trạng từ, bổ nghĩa cho động từ 'smiled'." },
+                { question: "164. The company is very efficient and gives a _______________ service. (speed)", options: ["A. speed", "B. speedy", "C. speedily", "D. speeding"], answer: "B", explanation: "Đáp án B. 'speedy' là tính từ, bổ nghĩa cho 'service'." },
+                { question: "165. Air and water are _______________ in our life. (necessary)", options: ["A. necessary", "B. necessarily", "C. necessities", "D. need"], answer: "C", explanation: "Đáp án C. 'necessities' là danh từ số nhiều, chỉ những thứ thiết yếu." },
+                { question: "166. There will be live _______________ at the party. (entertain)", options: ["A. entertained", "B. entertaining", "C. entertainment", "D. entertainer"], answer: "C", explanation: "Đáp án C. 'entertainment' là danh từ, chỉ sự giải trí." },
+                { question: "167. The sky was _______________. The weather was rather bad. (cloud)", options: ["A. cloud", "B. cloudy", "C. cloudless", "D. clouded"], answer: "B", explanation: "Đáp án B. 'cloudy' là tính từ, mô tả bầu trời (có mây)." },
+                { question: "168. Cowardly and mean are used to describe unacceptable _______________. (behave)", options: ["A. behaved", "B. behavior", "C. behaviors", "D. behaving"], answer: "C", explanation: "Đáp án C. 'behaviors' là danh từ số nhiều, chỉ các hành vi." },
+                { question: "169. We were _______________ by the display of lights. (attract)", options: ["A. attracted", "B. attractive", "C. attracting", "D. attraction"], answer: "A", explanation: "Đáp án A. 'attracted' là tính từ (phân từ quá khứ), mô tả cảm xúc của người (bị thu hút)." },
+                { question: "170. Are you asking for my opinion of him personally or _______________? (profession)", options: ["A. professional", "B. professionally", "C. profession", "D. professionalism"], answer: "B", explanation: "Đáp án B. 'professionally' là trạng từ, phù hợp để tạo cấu trúc song song với 'personally'." },
+                { question: "171. _______________ accounts for three-fourths of the income of the newspapers. (Advertise)", options: ["A. Advertise", "B. Advertising", "C. Advertisement", "D. Advertiser"], answer: "B", explanation: "Đáp án B. 'Advertising' là danh động từ (gerund), đóng vai trò chủ ngữ." },
+                { question: "172. I can't say anything at this time. The result is entirely _______________. (predict)", options: ["A. predicted", "B. predictable", "C. unpredictably", "D. unpredictable"], answer: "D", explanation: "Đáp án D. 'unpredictable' là tính từ, mô tả kết quả (không thể dự đoán được)." },
+                { question: "173. There were over 200 _______________ for the marketing's post. (apply)", options: ["A. applicant", "B. applicants", "C. application", "D. applied"], answer: "B", explanation: "Đáp án B. 'applicants' là danh từ số nhiều, chỉ những người nộp đơn." },
+                { question: "174. The news is almost certainly true although it is not yet _______________ informed. (office)", options: ["A. official", "B. officially", "C. office", "D. officer"], answer: "B", explanation: "Đáp án B. 'officially' là trạng từ, bổ nghĩa cho động từ 'informed'." },
+                { question: "175. Grammar _______________ change from language to language. (structural)", options: ["A. structure", "B. structural", "C. structures", "D. structurally"], answer: "C", explanation: "Đáp án C. 'structures' là danh từ số nhiều, chỉ các cấu trúc." },
+                { question: "176. We admired his _______________ under pressure. (calm)", options: ["A. calmly", "B. calm", "C. calmness", "D. calmed"], answer: "C", explanation: "Đáp án C. 'calmness' là danh từ, chỉ sự bình tĩnh." },
+                { question: "177. I don't know why it causes so much _______________. (embarrass)", options: ["A. embarrassed", "B. embarrassing", "C. embarrassment", "D. embarrassingly"], answer: "C", explanation: "Đáp án C. 'embarrassment' là danh từ, chỉ sự bối rối/ngượng ngùng." },
+                { question: "178. Reading books is both a means of _______________ and education. (relax)", options: ["A. relaxed", "B. relaxing", "C. relaxation", "D. relaxingly"], answer: "C", explanation: "Đáp án C. 'relaxation' là danh từ, chỉ sự thư giãn." },
+                { question: "179. Try to act _______________ even if you feel nervous. (confident)", options: ["A. confident", "B. confidently", "C. confidence", "D. confiding"], answer: "B", explanation: "Đáp án B. 'confidently' là trạng từ, bổ nghĩa cho động từ 'act'." },
+                { question: "180. One example of _______________ in real life is cooking. (conduct)", options: ["A. conducted", "B. conducting", "C. conduction", "D. conductor"], answer: "C", explanation: "Đáp án C. 'conduction' là danh từ, chỉ sự dẫn truyền." },
+                { question: "181. The 2013 tornado in Oklahoma caused _______________ damage to the city. (extend)", options: ["A. extended", "B. extensive", "C. extensively", "D. extension"], answer: "B", explanation: "Đáp án B. 'extensive' là tính từ, bổ nghĩa cho 'damage'." },
+                { question: "182. The girl coming to our class this morning sang very _______________. (attract)", options: ["A. attracted", "B. attractive", "C. attractively", "D. attraction"], answer: "C", explanation: "Đáp án C. 'attractively' là trạng từ, bổ nghĩa cho động từ 'sang'." },
+                { question: "183. This news has _______________ his fans all over the world. (delight)", options: ["A. delighted", "B. delightful", "C. delightfully", "D. delighting"], answer: "A", explanation: "Đáp án A. 'delighted' là động từ (quá khứ đơn), phù hợp với 'has + V3'." },
+                { question: "184. Is this one of the most _______________ experiences of your life? (stress)", options: ["A. stressed", "B. stressful", "C. stressfully", "D. stressing"], answer: "B", explanation: "Đáp án B. 'stressful' là tính từ, mô tả trải nghiệm." },
+                { question: "185. The region _______________ over 50% of the country's wheat. (production)", options: ["A. produced", "B. producing", "C. produces", "D. production"], answer: "C", explanation: "Đáp án C. 'produces' là động từ (hiện tại đơn), phù hợp với 'The region'." },
+                { question: "186. It is important to reward good _______________. (behave)", options: ["A. behavior", "B. behaviors", "C. behaved", "D. behaving"], answer: "B", explanation: "Đáp án B. 'behaviors' là danh từ số nhiều." },
+                { question: "187. The council has placed a _______________ order on the building. (preserve)", options: ["A. preserved", "B. preservation", "C. preserving", "D. preservative"], answer: "B", explanation: "Đáp án B. 'preservation' là danh từ, tạo cụm 'preservation order'." },
+                { question: "188. The use of cameras in this museum is strictly _______________. (forbid)", options: ["A. forbidding", "B. forbidden", "C. forbid", "D. forbiddance"], answer: "B", explanation: "Đáp án B. 'forbidden' là tính từ (phân từ quá khứ)." },
+                { question: "189. I work _______________ but I live in the suburbs. (town)", options: ["A. town", "B. towny", "C. downtown", "D. townhouse"], answer: "C", explanation: "Đáp án C. 'downtown' là trạng từ." },
+                { question: "190. He fought the illness with courage and _______________. (determine)", options: ["A. determined", "B. determination", "C. determine", "D. determinedly"], answer: "B", explanation: "Đáp án B. 'determination' là danh từ." },
+                { question: "191. The noise outsides made _______________ difficult. (concentrate)", options: ["A. concentrated", "B. concentrating", "C. concentration", "D. concentrator"], answer: "C", explanation: "Đáp án C. 'concentration' là danh từ." },
+                { question: "192. He is very _______________ about his work as it is very tough. (confident)", options: ["A. confident", "B. confidently", "C. unconfident", "D. confidence"], answer: "C", explanation: "Đáp án C. 'unconfident' là tính từ." },
+                { question: "193. He seemed a bit _______________ about his work situation. (depress)", options: ["A. depressed", "B. depressing", "C. depression", "D. depressingly"], answer: "A", explanation: "Đáp án A. 'depressed' là tính từ (phân từ quá khứ)." },
+                { question: "194. Cuba gained _______________ from Spain in 1898. (depend)", options: ["A. dependent", "B. dependence", "C. independence", "D. independently"], answer: "C", explanation: "Đáp án C. 'independence' là danh từ." },
+                { question: "195. Fishing is his favorite _______________. (relax)", options: ["A. relaxed", "B. relaxing", "C. relaxation", "D. relaxingly"], answer: "C", explanation: "Đáp án C. 'relaxation' là danh từ." },
+                { question: "196. She gave me a _______________ look. (worry)", options: ["A. worried", "B. worrying", "C. worry", "D. worries"], answer: "A", explanation: "Đáp án A. 'worried' là tính từ (phân từ quá khứ)." },
+                { question: "197. This film is good family _______________. (entertain)", options: ["A. entertained", "B. entertaining", "C. entertainment", "D. entertainer"], answer: "C", explanation: "Đáp án C. 'entertainment' là danh từ." },
+                { question: "198. The _______________ rate on the island is still unacceptably high. (literate)", options: ["A. literate", "B. literacy", "C. illiteracy", "D. literately"], answer: "C", explanation: "Đáp án C. 'illiteracy' là danh từ." },
+                { question: "199. Peter gets special _______________ because he knows the boss. (treat)", options: ["A. treated", "B. treatment", "C. treating", "D. treats"], answer: "B", explanation: "Đáp án B. 'treatment' là danh từ." },
+                { question: "200. The test is based on the _______________ of blood levels. (measure)", options: ["A. measured", "B. measuring", "C. measurement", "D. measures"], answer: "C", explanation: "Đáp án C. 'measurement' là danh từ." }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentTab = 'theory';
+        let currentLvl = 1;
+        let theoryIdx = 0;
+        let quizIdx = 0;
+        let scores = { 1: 0, 2: 0 };
+        let answeredQuestions = { 1: {}, 2: {} };
+        let isNavVisible = true;
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            loadTheory();
+            renderNavigator();
+            loadQuestion();
+            loadNotesList();
+            showToast("Giao diện 3 cột đã sẵn sàng!");
+        };
+
+        // --- UI TOGGLE ---
+        function toggleNavigator() {
+            const col = document.getElementById('quizNavigatorColumn');
+            const icon = document.getElementById('toggleIcon');
+            isNavVisible = !isNavVisible;
+            
+            if (isNavVisible) {
+                col.classList.remove('collapsed-nav');
+                icon.className = 'fas fa-list-ol';
+            } else {
+                col.classList.add('collapsed-nav');
+                icon.className = 'fas fa-chevron-right';
+            }
+        }
+
+        // --- TABS ---
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId + 'Section').classList.remove('hidden');
+            document.getElementById(tabId + 'Tab').classList.add('active');
+            currentTab = tabId;
+        }
+
+        function switchLevel(lvl) {
+            currentLvl = lvl;
+            quizIdx = 0;
+            const b1 = document.getElementById('lvl1Btn');
+            const b2 = document.getElementById('lvl2Btn');
+            const totalQ = quizLevels[currentLvl].length;
+            
+            if(lvl === 1) {
+                b1.className = "px-6 py-2 rounded-lg font-bold transition-all bg-white text-blue-600 shadow-sm";
+                b2.className = "px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:text-blue-500";
+                document.getElementById('levelBadge').textContent = "Cấp độ 1";
+            } else {
+                b2.className = "px-6 py-2 rounded-lg font-bold transition-all bg-white text-blue-600 shadow-sm";
+                b1.className = "px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:text-blue-500";
+                document.getElementById('levelBadge').textContent = "Cấp độ 2";
+            }
+            
+            document.getElementById('questionCountBadge').innerHTML = `Câu <span id="currentIdxText">1</span> / ${totalQ}`;
+            renderNavigator();
+            loadQuestion();
+            updateScoreDisplay();
+        }
+
+        // --- THEORY ---
+        function loadTheory() {
+            const card = theoryData[theoryIdx];
+            const flashcard = document.getElementById('theoryFlashcard');
+            flashcard.classList.remove('flipped');
+            setTimeout(() => {
+                flashcard.querySelector('.flashcard-front').textContent = card.front;
+                flashcard.querySelector('.flashcard-back').innerText = card.back;
+            }, 100);
+            document.getElementById('theoryProgress').textContent = `Trang ${theoryIdx + 1} / ${theoryData.length}`;
+        }
+        function nextTheory() { theoryIdx = (theoryIdx + 1) % theoryData.length; loadTheory(); }
+        function prevTheory() { theoryIdx = (theoryIdx - 1 + theoryData.length) % theoryData.length; loadTheory(); }
+
+        // --- QUIZ ---
+        function renderNavigator() {
+            const nav = document.getElementById('quizNavigator');
+            nav.innerHTML = '';
+            const questions = quizLevels[currentLvl];
+            questions.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = `nav-dot unvisited`;
+                // Extract number from text for labeling
+                const numMatch = questions[i].question.match(/\d+/);
+                dot.textContent = numMatch ? numMatch[0] : i + 1;
+                
+                const state = answeredQuestions[currentLvl][i];
+                if (state) {
+                    dot.classList.add(state.isCorrect ? 'correct' : 'incorrect');
+                    dot.classList.remove('unvisited');
+                }
+                if (i === quizIdx) dot.classList.add('current');
+                dot.onclick = () => { quizIdx = i; loadQuestion(); };
+                nav.appendChild(dot);
+            });
+        }
+
+        function loadQuestion() {
+            const q = quizLevels[currentLvl][quizIdx];
+            document.getElementById('questionText').innerText = q.question;
+            document.getElementById('currentIdxText').innerText = quizIdx + 1;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            const state = answeredQuestions[currentLvl][quizIdx];
+            
+            q.options.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option p-4 rounded-xl cursor-pointer font-medium flex items-center justify-between text-sm';
+                div.innerHTML = `<span>${opt}</span>`;
+                if (!state) {
+                    div.onclick = () => selectOption(div, opt.charAt(0));
+                } else {
+                    div.classList.add('disabled');
+                    if (opt.charAt(0) === q.answer) div.classList.add('correct');
+                    if (opt.charAt(0) === state.selected && opt.charAt(0) !== q.answer) div.classList.add('incorrect');
+                }
+                container.appendChild(div);
+            });
+            
+            const fb = document.getElementById('feedbackArea');
+            const next = document.getElementById('nextBtn');
+            const check = document.getElementById('checkBtn');
+            
+            if (state) {
+                fb.classList.remove('hidden');
+                fb.className = `mt-6 p-4 rounded-xl ${state.isCorrect ? 'bg-green-50 text-green-800 border border-green-100' : 'bg-red-50 text-red-800 border border-red-100'}`;
+                document.getElementById('feedbackMessage').innerText = state.isCorrect ? "Chính xác!" : "Chưa đúng!";
+                document.getElementById('explanationText').innerText = q.explanation;
+                check.classList.add('hidden');
+                next.classList.remove('hidden');
+            } else {
+                fb.classList.add('hidden');
+                check.classList.remove('hidden');
+                next.classList.add('hidden');
+            }
+            renderNavigator();
+        }
+
+        let selectedAns = null;
+        function selectOption(el, val) {
+            document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedAns = val;
+        }
+
+        function checkAnswer() {
+            if (!selectedAns) return showToast("Chọn đáp án trước!", "warning");
+            const q = quizLevels[currentLvl][quizIdx];
+            const isCorrect = selectedAns === q.answer;
+            answeredQuestions[currentLvl][quizIdx] = { isCorrect, selected: selectedAns };
+            if (isCorrect) scores[currentLvl]++;
+            selectedAns = null;
+            updateScoreDisplay();
+            loadQuestion();
+        }
+
+        function nextQuestion() {
+            if (quizIdx < quizLevels[currentLvl].length - 1) { 
+                quizIdx++; 
+                loadQuestion(); 
+            } else { 
+                showToast("Hoàn thành cấp độ này!"); 
+            }
+        }
+
+        function updateScoreDisplay() {
+            const scaled = (scores[currentLvl] / quizLevels[currentLvl].length) * 10;
+            document.getElementById('currentScore').innerText = `${scaled.toFixed(1)} / 10`;
+        }
+
+        function resetCurrentQuiz() {
+            if(confirm("Xóa toàn bộ kết quả bài làm của cấp độ này?")) {
+                answeredQuestions[currentLvl] = {};
+                scores[currentLvl] = 0;
+                quizIdx = 0;
+                updateScoreDisplay();
+                loadQuestion();
+            }
+        }
+
+        // --- NOTES ---
+        function saveNote() {
+            const input = document.getElementById('noteInput');
+            const text = input.value.trim();
+            if(!text) return showToast("Nhập nội dung ghi chú!", "warning");
+            let notes = JSON.parse(localStorage.getItem('wordFormNotes') || '[]');
+            notes.unshift({ text, date: new Date().toLocaleString('vi-VN') });
+            localStorage.setItem('wordFormNotes', JSON.stringify(notes));
+            input.value = '';
+            loadNotesList();
+            showToast("Đã lưu ghi chú!");
+        }
+
+        function loadNotesList() {
+            const list = document.getElementById('savedNotesList');
+            const notes = JSON.parse(localStorage.getItem('wordFormNotes') || '[]');
+            if(notes.length === 0) {
+                list.innerHTML = `<p class="text-slate-400 italic text-center py-4 text-xs">Chưa có ghi chú.</p>`;
+                return;
+            }
+            list.innerHTML = notes.map((n, i) => `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg relative group transition-all hover:border-blue-300">
+                    <p class="text-slate-700 text-xs mb-1 pr-4 whitespace-pre-wrap">${n.text}</p>
+                    <span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">${n.date}</span>
+                    <button onclick="deleteNote(${i})" class="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 transition-all hover:text-red-500">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function deleteNote(idx) {
+            let notes = JSON.parse(localStorage.getItem('wordFormNotes') || '[]');
+            notes.splice(idx, 1);
+            localStorage.setItem('wordFormNotes', JSON.stringify(notes));
+            loadNotesList();
+        }
+
+        function clearAllNotes() {
+            if(confirm("Xóa tất cả ghi chú?")) {
+                localStorage.removeItem('wordFormNotes');
+                loadNotesList();
+            }
+        }
+
+        function exportNotes() {
+            const notes = JSON.parse(localStorage.getItem('wordFormNotes') || '[]');
+            if(notes.length === 0) return showToast("Chưa có ghi chú để xuất!", "warning");
+            let doc = `
+                <html xmlns:w='urn:schemas-microsoft-com:office:word'>
+                <head><meta charset='utf-8'><title>Ghi Chú Word Form</title>
+                <style>body { font-family: 'Times New Roman'; padding: 20px; } h1 { color: #2563eb; }</style>
+                </head><body>
+                <h1>GHI CHÚ WORD FORM</h1>
+                <p>Xuất lúc: ${new Date().toLocaleString('vi-VN')}</p>
+                <hr>
+                ${notes.map(n => `<div><p><strong>[${n.date}]</strong><br>${n.text}</p></div>`).join('<br>')}
+                </body></html>`;
+            const blob = new Blob([doc], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'ghi_chu_word_form.doc';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.remove('opacity-0', 'translate-y-10');
+            t.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                t.classList.add('opacity-0', 'translate-y-10');
+                t.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
